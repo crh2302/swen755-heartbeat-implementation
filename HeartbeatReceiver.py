@@ -12,35 +12,35 @@ class HeartbeatReceiver:
         self.expireTime = 0
         self.lastUpdatedTime = 0
 
+    def get_current_time(self):
+        return int(time.time())
+
     def check_alive(self):
-        while True:
-            print("working...")
-            time.sleep(self.checkingInterval)
+        current_time = self.get_current_time()
+        latency_time = self.lastUpdatedTime - current_time
+        print("current time: ", current_time)
+        print("last updated time: ", self.lastUpdatedTime)
+        return latency_time < self.checkingInterval
 
     def pit_a_pat(self):
-        # call self.update_lapse_time()
-        return False
+        print("HeartbeatReceiver says: Invoking pit_a_pat()")
+        self.update_time()
 
     def update_time(self):
-        self.lastUpdatedTime = int(time.time())
+        self.lastUpdatedTime = self.get_current_time()
         return 0
-
-    def test(self):
-        print("HeartbeatReceiver says: If you see this message. The test was was a success")
-
-
 
     @staticmethod
     def run(queue):
-        heartbeat_sender = HeartbeatReceiver()
+        heartbeat_receiver = HeartbeatReceiver()
         while True:
             print("HeartbeatReceiver says: I'm alive: " + strftime("%Y-%m-%d %H:%M:%S", gmtime()))
             msg = queue.get() # TODO This method locks the process. Should we fix this?
             if msg == "send_pulse":
-                heartbeat_sender.test()
+                heartbeat_receiver.pit_a_pat()
             else:
                 print("No message found")
 
-    def test(self):
-        print("HeartbeatReceiver says: If you see this message. The test was was a success")
+            is_alive = heartbeat_receiver.check_alive()
+            print("Is alive? ", is_alive)
 
