@@ -1,4 +1,4 @@
-from multiprocessing import Process, Queue, Pipe
+from multiprocessing import Process, Queue
 from HeartbeatSender import HeartbeatSender
 from HeartbeatReceiver import HeartbeatReceiver
 import multiprocessing
@@ -11,9 +11,12 @@ if __name__ == '__main__':
     queue = Queue()
 
     # Step 2
-    sender_process = Process(name='sender', target=HeartbeatSender.run, args=(queue,))
-    receiver_process = Process(name='receiver', target=HeartbeatReceiver.run, args=(queue,))
+    sender_process = Process(name='HeartbeatSender Process', target=HeartbeatSender.run, args=(queue,))
+    receiver_process = Process(name='HeartbeatReceiver Process', target=HeartbeatReceiver.run2, args=(queue,))
 
     # Step 3
     sender_process.start()
     receiver_process.start()
+
+    sender_process.join()
+    receiver_process.join()

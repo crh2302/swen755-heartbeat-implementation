@@ -37,6 +37,4 @@ class HeartbeatSender:
         t.daemon = True
         t.start()
 
-        while True:
-            # Do whatever the method process needs to do
-            heartbeat_sender.nearby_object_detection()
+        heartbeat_sender.nearby_object_detection()
