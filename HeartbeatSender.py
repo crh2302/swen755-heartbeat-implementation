@@ -30,7 +30,6 @@ class HeartbeatSender:
             heartbeat_sender.send_pulse()
             #Call a method from HeartbeatReceiver
 
-
             #queue.put(messages.get("RUN_TEST"))
             #time.sleep(5)
 
