@@ -1,6 +1,6 @@
 from multiprocessing import Process, Queue
-from HeartbeatSender import HeartbeatSender
-from HeartbeatReceiver import HeartbeatReceiver
+from ObjectTracker import ObjectTracker
+from ThreatAssessmentModule import ThreatAssessmentModule
 import multiprocessing
 import logging
 
@@ -11,8 +11,8 @@ if __name__ == '__main__':
     queue = Queue()
 
     # Step 2
-    sender_process = Process(name='HeartbeatSender Process', target=HeartbeatSender.run, args=(queue,))
-    receiver_process = Process(name='HeartbeatReceiver Process', target=HeartbeatReceiver.run2, args=(queue,))
+    sender_process = Process(name='HeartbeatSender Process', target=ObjectTracker.run, args=(queue,))
+    receiver_process = Process(name='HeartbeatReceiver Process', target=ThreatAssessmentModule.run, args=(queue,))
 
     # Step 3
     sender_process.start()
