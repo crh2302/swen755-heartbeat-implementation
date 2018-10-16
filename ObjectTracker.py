@@ -2,9 +2,13 @@ import random
 import time
 import threading
 import multiprocessing
+import logging
+import Pyro4
+import queue
 from time import gmtime, strftime
 
 
+@Pyro4.expose
 class ObjectTracker:
     """
     This class is responsible of tracking nearby objects via the car's sensor. The results are sent
@@ -107,3 +111,20 @@ class ObjectTracker:
         t.start()
 
         heartbeat_sender.detect_nearby_object()
+
+
+if __name__ == '__main__':
+    multiprocessing.log_to_stderr(logging.INFO)
+    Pyro4.config.REQUIRE_EXPOSE = False
+
+    daemon = Pyro4.Daemon()  # make a Pyro4 daemon
+    ns = Pyro4.locateNS()  # find the name server
+    queue = multiprocessing.Queue()
+
+    # Create the Queue object and register it on the Pyro4 proxy
+    queue_uri = daemon.register(queue)
+    ns.register("heartbeat.queue", queue_uri)
+    sender_process = multiprocessing.Process(name='HeartbeatSender Process', target=ObjectTracker.run, args=(queue,))
+    sender_process.start()
+
+    daemon.requestLoop()

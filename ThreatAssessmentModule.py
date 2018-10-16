@@ -1,8 +1,12 @@
 from threading import Thread, Timer, ThreadError
-import queue
+import queue as q
+import multiprocessing
+import logging
+import Pyro4
 import time
 
 
+@Pyro4.expose
 class ThreatAssessmentModule:
     """
         This class is responsible of using the object tracking information to assess the threat level of
@@ -51,8 +55,8 @@ class ThreatAssessmentModule:
         """
         current_time = self.get_current_time()
         latency_time = current_time - self.last_updated_time
-        print(f"HeartbeatReceiver MainThread says: current time: {current_time}; last updated time: {self.last_updated_time} ")
-        print(f"HeartbeatReceiver MainThread says: latency_time: {latency_time} < expire_time: {self.expire_time} ")
+        # print(f"HeartbeatReceiver MainThread says: current time: {current_time}; last updated time: {self.last_updated_time} ")
+        # print(f"HeartbeatReceiver MainThread says: latency_time: {latency_time} < expire_time: {self.expire_time} ")
         return latency_time < self.expire_time
 
     def pit_a_pat(self):
@@ -65,7 +69,7 @@ class ThreatAssessmentModule:
         Returns:
             None.
         """
-        print("HeartbeatReceiver Thread 1 says: Invoking pit_a_pat()")
+        # print("HeartbeatReceiver Thread 1 says: Invoking pit_a_pat()")
         self.update_time()
 
     def update_time(self):
@@ -84,10 +88,10 @@ class ThreatAssessmentModule:
         print(info)
         msg = self.queue.get()
         if msg == "send_pulse":
-            print("HeartbeatReceiver Thread 1 says: Pulse received")
+            print("HeartbeatReceiver says: Pulse received")
             self.pit_a_pat()
         else:
-            print("HeartbeatReceiver Thread 1 says: No message found")
+            print("HeartbeatReceiver says: No pulse found")
 
     def monitor_alive(self, info):
         print(info)
@@ -114,47 +118,26 @@ class ThreatAssessmentModule:
 
     def timed_message_receiver(self, info):
         while True:
-            print(info)
+            # print(info)
             try:
                 msg = self.queue.get_nowait()
-            except queue.Empty as e:
-                print(e)
+            except Exception as e:
                 msg = ""
 
             if msg == "send_pulse":
-                print("HeartbeatReceiver Thread 1 says: Pulse received")
+                print("HeartbeatReceiver says: Pulse received")
                 self.pit_a_pat()
             else:
-                print("HeartbeatReceiver Thread 1 says: No message found")
+                print("HeartbeatReceiver says: No pulse found")
 
             time.sleep(self.pulse_verification_interval)
 
-    def timed_monitor_alive(self,info):
+    def timed_monitor_alive(self, info):
         while True:
-            print(info)
+            # print(info)
             is_alive = self.check_alive()
             print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
             time.sleep(self.checking_interval)
-
-    @staticmethod
-    def run_deprecated(queue):
-        """
-        Method that runs when the class is called by Main as a process.
-
-        Parameters:
-            queue (object): The queue object used for inter-process communication.
-
-        Returns:
-            None.
-        """
-        heartbeat_receiver = ThreatAssessmentModule(queue)
-
-        t1 = set_interval(heartbeat_receiver.get_pulse_verification_interval(),
-                          heartbeat_receiver.message_receiver,
-                          "HeartbeatReceiver Thread 1 says: Checking for pulse")
-        t2 = set_interval(heartbeat_receiver.get_checking_interval(),
-                          heartbeat_receiver.monitor_alive,
-                          "HeartbeatReceiver Thread 2 says: Monitoring  if alive")
 
     @staticmethod
     def run(queue):
@@ -190,3 +173,11 @@ def set_interval(sec, func, *args):
         print(e.args)
 
     return t
+
+
+if __name__ == '__main__':
+    multiprocessing.log_to_stderr(logging.INFO)
+    Pyro4.config.REQUIRE_EXPOSE = False
+    queue = Pyro4.Proxy("PYRONAME:heartbeat.queue")
+
+    ThreatAssessmentModule.run(queue)
