@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -145,4 +144,3 @@ tmtagsHistory
 *.sublime-project
 *.sublime-workspace
 .bundle
->>>>>>> dev
