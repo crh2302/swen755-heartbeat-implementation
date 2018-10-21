@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # swen755-heartbeat-implementation
 SWEN-755 heartbeat tactic implementation for a functionality of a Self-Driving car 
 =======
@@ -27,4 +26,3 @@ pyro4-ns
 ```
 
 After this, execute the ObjectTracker.py file in a terminal, followed by the ThreatAssessmentModule.py executable.
->>>>>>> dev
