@@ -1,9 +1,12 @@
 from threading import Thread, Timer, ThreadError
-import queue as q
+from RedundantObjectTracker import RedundantObjectTracker
 import multiprocessing
 import logging
 import Pyro4
 import time
+import os
+from sys import executable
+from subprocess import Popen, PIPE, call
 
 
 @Pyro4.expose
@@ -31,11 +34,33 @@ class ThreatAssessmentModule:
         Parameters:
             queue (object): The queue object used for inter-process communication.
         """
+        self.queue = queue
+        self.first_time = True
+        self.test_entro = False
+
         self.checking_interval = 3
         self.pulse_verification_interval = 1
+
         self.expire_time = 9
         self.last_updated_time = 0
-        self.queue = queue
+
+    def get_checking_interval(self):
+        """
+        Gets the checking interval of the class.
+
+        Returns:
+            checking_interval (int): Integer with the class' checking interval.
+        """
+        return self.checking_interval
+
+    def get_pulse_verification_interval(self):
+        """
+        Gets the pulse verification interval of the heartbeat tactic.
+
+        Returns:
+            pulse_verification_interval (int): Integer with the pulse verification interval of the heartbeat tactic.
+        """
+        return self.pulse_verification_interval
 
     def get_current_time(self):
         """
@@ -55,8 +80,6 @@ class ThreatAssessmentModule:
         """
         current_time = self.get_current_time()
         latency_time = current_time - self.last_updated_time
-        # print(f"HeartbeatReceiver MainThread says: current time: {current_time}; last updated time: {self.last_updated_time} ")
-        # print(f"HeartbeatReceiver MainThread says: latency_time: {latency_time} < expire_time: {self.expire_time} ")
         return latency_time < self.expire_time
 
     def pit_a_pat(self):
@@ -84,44 +107,27 @@ class ThreatAssessmentModule:
         """
         self.last_updated_time = self.get_current_time()
 
-    def message_receiver(self, info):
-        print(info)
-        msg = self.queue.get()
-        if msg == "send_pulse":
-            print("HeartbeatReceiver says: Pulse received")
-            self.pit_a_pat()
-        else:
-            print("HeartbeatReceiver says: No pulse found")
+    # def message_receiver(self, info):
+    #     print(info)
+    #     msg = self.queue.get()  # CHANGED: Previously was get_nowait()
+    #     if msg == "send_pulse":
+    #         print("HeartbeatReceiver says: Pulse received")
+    #         self.pit_a_pat()
+    #     else:
+    #         print("HeartbeatReceiver says: No pulse found")
 
-    def monitor_alive(self, info):
-        print(info)
-        is_alive = self.check_alive()
-        print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
-
-    def get_checking_interval(self):
-        """
-        Gets the checking interval of the class.
-
-        Returns:
-            checking_interval (int): Integer with the class' checking interval.
-        """
-        return self.checking_interval
-
-    def get_pulse_verification_interval(self):
-        """
-        Gets the pulse verification interval of the heartbeat tactic.
-
-        Returns:
-            pulse_verification_interval (int): Integer with the pulse verification interval of the heartbeat tactic.
-        """
-        return self.pulse_verification_interval
+    # def monitor_alive(self, info):
+    #     print(info)
+    #     is_alive = self.check_alive()
+    #     print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
 
     def timed_message_receiver(self, info):
         while True:
             # print(info)
             try:
-                msg = self.queue.get_nowait()
+                msg = self.queue.get()
             except Exception as e:
+                print("queue.get() exception: ", e)
                 msg = ""
 
             if msg == "send_pulse":
@@ -136,8 +142,19 @@ class ThreatAssessmentModule:
         while True:
             # print(info)
             is_alive = self.check_alive()
-            print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
+            print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)  #, " -- First time? ", self.first_time
+
+            # Start the redundant process here
+            if not is_alive and not self.first_time and not self.test_entro:
+                redundant_tracker = Thread(target=self.call_redundant)
+                redundant_tracker.start()
+                self.test_entro = True
+
+            self.first_time = False
             time.sleep(self.checking_interval)
+
+    def call_redundant(self):
+        call(['open', '-W', '-a', 'Terminal.app', 'RedundantObjectTracker.py'])
 
     @staticmethod
     def run(queue):

@@ -1,3 +1,4 @@
+#!//usr/local/Cellar/python3/3.6.3/Frameworks/Python.framework/Versions/3.6/bin/python3.6
 import random
 import time
 import threading
@@ -9,7 +10,7 @@ from time import gmtime, strftime
 
 
 @Pyro4.expose
-class ObjectTracker:
+class RedundantObjectTracker:
     """
     This class is responsible of tracking nearby objects via the car's sensor. The results are sent
     to the ThreatAssessmentModule class.
@@ -48,7 +49,7 @@ class ObjectTracker:
             None.
         """
         while multiprocessing.current_process().is_alive():
-            print("HeartbeatSender says: I'm alive: " + strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+            print("Redundant says: I'm alive: " + strftime("%Y-%m-%d %H:%M:%S", gmtime()))
             self.queue.put("send_pulse")
             time.sleep(self.sending_interval)
 
@@ -76,7 +77,7 @@ class ObjectTracker:
     def calculate_proximity(self):
         # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
         r1 = random.randint(1, 100)
-        r2 = random.randint(0, 9)  # <-- inserted fault
+        r2 = random.randint(1, 9)  # <-- fault injection
         result = r1 / r2
         print("Object proximity is: " + str(result) + " meters away.")
         return result
@@ -107,7 +108,7 @@ class ObjectTracker:
         Returns:
             None.
         """
-        heartbeat_sender = ObjectTracker(queue)
+        heartbeat_sender = RedundantObjectTracker(queue)
 
         # Open a thread to send the heartbeat pulse
         t = threading.Thread(target=heartbeat_sender.send_pulse)
@@ -118,6 +119,7 @@ class ObjectTracker:
 
     @staticmethod
     def start_object_tracker():
+
         multiprocessing.log_to_stderr(logging.INFO)
         Pyro4.config.REQUIRE_EXPOSE = False
 
@@ -128,11 +130,10 @@ class ObjectTracker:
         # Create the Queue object and register it on the Pyro4 proxy
         queue_uri = daemon.register(queue)
         ns.register("heartbeat.queue", queue_uri)
-        sender_process = multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue,))
+        sender_process = multiprocessing.Process(name='Redundant Process', target=RedundantObjectTracker.run, args=(queue,))
         sender_process.start()
 
-        daemon.requestLoop()
 
-
-# Start object tracker (this is like the '__main__' method)
-ObjectTracker.start_object_tracker()
+if __name__ == '__main__':
+    # Start object tracker (this is like the '__main__' method)
+    RedundantObjectTracker.start_object_tracker()
