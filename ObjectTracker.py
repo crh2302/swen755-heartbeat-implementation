@@ -34,6 +34,7 @@ class ObjectTracker:
         self.queue = queue
         self.allow_fault = allow_fault
         self.time_between_steps = 5
+        self.isActive = False
 
         # Array containing the method steps to the Pipe-And-Filter pattern
         self.pipeline_steps = [
@@ -80,8 +81,7 @@ class ObjectTracker:
             None.
         """
         while True:
-            result = self.calculate_proximity()
-            self.send_proximity_coordinates(result)
+            self.calculate_proximity()
             time.sleep(5)
 
     def calculate_proximity(self):
@@ -108,6 +108,16 @@ class ObjectTracker:
             data (float): The processed result from the operation from the detect_nearby_object() method
         """
         # Do something here
+        self.calculate_proximity()
+
+        cs = Pyro4.Proxy("PYRONAME:CommunicationService")
+        print(f"Communication service in object tracker {cs}")
+
+        try:
+            cs.set_value_result_queue(data)
+        except:
+            pass
+
         data = data + 1
         return data
 
@@ -190,6 +200,8 @@ class ObjectTracker:
         t.daemon = True
         t.start()
 
+        #heartbeat_sender.detect_nearby_object()
+
         # Synchronization code:
         # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
         while True:
@@ -207,6 +219,8 @@ class ObjectTracker:
             # or the function_result (for the redundant tracker)
             # The 'last_step' parameter should have the function_name on the redundant tracker
             result = heartbeat_sender.calculate_pipeline_data(data, "")
+            heartbeat_sender.send_proximity_coordinates(result)
+
             print("The end result of the pipeline is: " + str(result))
 
     @staticmethod
@@ -216,15 +230,21 @@ class ObjectTracker:
 
         daemon = Pyro4.Daemon()  # make a Pyro4 daemon
         ns = Pyro4.locateNS()  # find the name server
-        queue = multiprocessing.Queue()
 
         # Create the Queue object and register it on the Pyro4 proxy
-        queue_uri = daemon.register(queue)
+        queue_hb = multiprocessing.Queue()
+        queue_uri = daemon.register(queue_hb)
         ns.register("heartbeat.queue", queue_uri)
-        sender_process = multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue,))
+
+        sender_process=multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue_hb,))
         sender_process.start()
 
         daemon.requestLoop()
+
+    def post_result(self):
+        pass
+
+
 
 
 if __name__ == '__main__':
