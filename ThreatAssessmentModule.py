@@ -32,8 +32,7 @@ class ThreatAssessmentModule:
             queue (object): The queue object used for inter-process communication.
         """
         self.queue = queue
-        self.first_time = True
-        self.test_entro = False
+        self.pulse_tries_left = 3
 
         self.checking_interval = 3
         self.pulse_verification_interval = 1
@@ -108,7 +107,7 @@ class ThreatAssessmentModule:
         while True:
             # print(info)
             try:
-                msg = self.queue.get()
+                msg = self.queue.get_nowait()
             except Exception as e:
                 msg = ""
 
@@ -127,15 +126,15 @@ class ThreatAssessmentModule:
             print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
 
             # Start the redundant process here
-            if not is_alive and not self.first_time and not self.test_entro:
+            if not is_alive and self.pulse_tries_left <= 0:
                 self.activate_passive_node()
-                self.test_entro = True
                 # TEST (COLD SPARING)
                 # redundant_tracker = Thread(target=self.call_redundant)
                 # redundant_tracker.start()
                 # self.test_entro = True
 
-            self.first_time = False
+            if self.pulse_tries_left > 0:
+                self.pulse_tries_left = self.pulse_tries_left - 1
             time.sleep(self.checking_interval)
 
     def call_redundant(self):

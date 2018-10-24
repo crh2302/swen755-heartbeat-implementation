@@ -29,7 +29,7 @@ class ObjectTracker:
         Parameters:
             queue (object): The queue object used for inter-process communication.
         """
-        self.sending_interval = 3
+        self.sending_interval = 1
         self.queue = queue
         self.allow_fault = allow_fault
 
