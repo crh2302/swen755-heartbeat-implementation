@@ -6,6 +6,7 @@ import logging
 import Pyro4
 import queue
 from time import gmtime, strftime
+from constants import LOG_PIPELINE_FILENAME
 
 
 @Pyro4.expose
@@ -32,6 +33,15 @@ class ObjectTracker:
         self.sending_interval = 1
         self.queue = queue
         self.allow_fault = allow_fault
+        self.time_between_steps = 5
+
+        # Array containing the method steps to the Pipe-And-Filter pattern
+        self.pipeline_steps = [
+            self.split_string,
+            self.convert_to_int,
+            self.get_sum_and_size,
+            self.get_average
+        ]
 
     def send_pulse(self):
         """
@@ -101,6 +111,67 @@ class ObjectTracker:
         data = data + 1
         return data
 
+    def calculate_pipeline_data(self, data, last_step=""):
+        if last_step != "":
+            step_index = get_step_index(self.pipeline_steps, last_step)
+            remaining_steps = self.pipeline_steps[step_index + 1:]
+            print(remaining_steps)
+            result = self.combine_pipeline(data, remaining_steps)
+        else:
+            result = self.combine_pipeline(data, self.pipeline_steps)
+        return result
+
+    # Processing step methods
+    @staticmethod
+    def split_string(item):
+        # First step: split a String of the form "1,2,3,4,5" on an array, using commas as the delimiter
+        # Input: "1,2,3,4,5" => Output: ["1","2","3","4","5"]
+        result = item.split(',')
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("split_string;" + repr(result) + "\n")
+        return result
+
+    @staticmethod
+    def convert_to_int(item):
+        # Second step: converts the Strings of the previous array into integers
+        # Input: ["1","2","3","4","5"] => Output: [1,2,3,4,5]
+        result = [int(i) for i in item]
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("convert_to_int;" + repr(result) + "\n")
+        return result
+
+    @staticmethod
+    def get_sum_and_size(items):
+        # Processing for this step goes here
+        # Third step: takes the array of integers, and returns a 'sum' and a 'size' value in a dictionary
+        # Input: [1,2,3,4,5] => Output: { 'sum': 15, 'size': 5 }
+        result = {'sum': sum(items), 'size': len(items)}
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("get_sum_and_size;" + repr(result) + "\n")
+        return result
+
+    @staticmethod
+    def get_average(item):
+        # Fourth step: use the sum and size values to calculate the average (sum / size)
+        # Input: { 'sum': 15, 'size': 5 } => Output: 3
+        result = item['sum'] / item['size']
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("get_average;" + repr(result) + "\n")
+        return result
+    # End of processing step methods
+
+    def combine_pipeline(self, source, pipeline):
+        """
+        Combines source and pipeline and return a generator.
+        """
+        gen = source
+        for step in pipeline:
+            gen = step(gen)
+            print("The result of the step " + step.__name__ + " is: ")
+            print(gen)
+            time.sleep(self.time_between_steps)
+        return gen
+
     @staticmethod
     def run(queue, allow_fault):
         """
@@ -119,7 +190,24 @@ class ObjectTracker:
         t.daemon = True
         t.start()
 
-        heartbeat_sender.detect_nearby_object()
+        # Synchronization code:
+        # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
+        while True:
+            # Get the input data
+            # TODO: This is hardcoded for now, but the data should come from a Pyro4 queue
+            data = "1,2,3,4,5"
+
+            # TODO: Synchronize with the pipeline-log.txt to check the last executed method
+            last_line = open(LOG_PIPELINE_FILENAME, "r").readlines()[-1]
+            function_name = last_line.split(';')[0]
+            function_result = eval(last_line.split(';')[1])  # eval is used to convert from string to object
+
+            # TODO:
+            # The 'data' parameter here should be either the input (for the active tracker)
+            # or the function_result (for the redundant tracker)
+            # The 'last_step' parameter should have the function_name on the redundant tracker
+            result = heartbeat_sender.calculate_pipeline_data(data, "")
+            print("The end result of the pipeline is: " + str(result))
 
     @staticmethod
     def start_object_tracker():
@@ -140,4 +228,14 @@ class ObjectTracker:
 
 
 if __name__ == '__main__':
-    ObjectTracker.start_object_tracker()
+    ObjectTracker.start
+
+
+def get_step_index(items, step_name):
+    for index, step in enumerate(items):
+        if step.__name__ == step_name:
+            return index
+        else:
+            continue
+    return -1
+

@@ -1,0 +1,53 @@
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
+split_string;['1', '2', '3', '4', '5']
+convert_to_int;[1, 2, 3, 4, 5]
+get_sum_and_size;{'sum': 15, 'size': 5}
+get_average;3.0
