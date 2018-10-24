@@ -1,12 +1,9 @@
 from threading import Thread, Timer, ThreadError
-from RedundantObjectTracker import RedundantObjectTracker
 import multiprocessing
 import logging
 import Pyro4
 import time
-import os
-from sys import executable
-from subprocess import Popen, PIPE, call
+from subprocess import call
 
 
 @Pyro4.expose
@@ -107,27 +104,12 @@ class ThreatAssessmentModule:
         """
         self.last_updated_time = self.get_current_time()
 
-    # def message_receiver(self, info):
-    #     print(info)
-    #     msg = self.queue.get()  # CHANGED: Previously was get_nowait()
-    #     if msg == "send_pulse":
-    #         print("HeartbeatReceiver says: Pulse received")
-    #         self.pit_a_pat()
-    #     else:
-    #         print("HeartbeatReceiver says: No pulse found")
-
-    # def monitor_alive(self, info):
-    #     print(info)
-    #     is_alive = self.check_alive()
-    #     print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
-
     def timed_message_receiver(self, info):
         while True:
             # print(info)
             try:
                 msg = self.queue.get()
             except Exception as e:
-                print("queue.get() exception: ", e)
                 msg = ""
 
             if msg == "send_pulse":
@@ -142,19 +124,33 @@ class ThreatAssessmentModule:
         while True:
             # print(info)
             is_alive = self.check_alive()
-            print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)  #, " -- First time? ", self.first_time
+            print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
 
             # Start the redundant process here
             if not is_alive and not self.first_time and not self.test_entro:
-                redundant_tracker = Thread(target=self.call_redundant)
-                redundant_tracker.start()
+                self.activate_passive_node()
                 self.test_entro = True
+                # TEST (COLD SPARING)
+                # redundant_tracker = Thread(target=self.call_redundant)
+                # redundant_tracker.start()
+                # self.test_entro = True
 
             self.first_time = False
             time.sleep(self.checking_interval)
 
     def call_redundant(self):
         call(['open', '-W', '-a', 'Terminal.app', 'RedundantObjectTracker.py'])
+
+    def activate_passive_node(self):
+        self.queue = Pyro4.Proxy("PYRONAME:redundant.queue")
+        print("activating backup queue", self.queue)
+
+    @staticmethod
+    def start_active_node():
+        Pyro4.config.REQUIRE_EXPOSE = False
+        # queue = Pyro4.Proxy("PYRONAME:heartbeat.queue")
+        queue = Pyro4.Proxy("PYRONAME:active.queue")
+        ThreatAssessmentModule.run(queue)
 
     @staticmethod
     def run(queue):
@@ -175,6 +171,7 @@ class ThreatAssessmentModule:
             print(e)
             print(e.args)
 
+        print("activating main queue", heartbeat_receiver.queue)
         heartbeat_receiver.timed_monitor_alive("HeartbeatReceiver Main Thread says: Monitoring if alive")
 
 
@@ -193,8 +190,4 @@ def set_interval(sec, func, *args):
 
 
 if __name__ == '__main__':
-    multiprocessing.log_to_stderr(logging.INFO)
-    Pyro4.config.REQUIRE_EXPOSE = False
-    queue = Pyro4.Proxy("PYRONAME:heartbeat.queue")
-
-    ThreatAssessmentModule.run(queue)
+    ThreatAssessmentModule.start_active_node()

@@ -22,7 +22,7 @@ class ObjectTracker:
         queue (object): The queue object used to communicate with the ThreatAssessmentModule process.
     """
 
-    def __init__(self, queue):
+    def __init__(self, queue, allow_fault):
         """
         The constructor for the ObjectTracker class.
 
@@ -31,6 +31,7 @@ class ObjectTracker:
         """
         self.sending_interval = 3
         self.queue = queue
+        self.allow_fault = allow_fault
 
     def send_pulse(self):
         """
@@ -76,9 +77,13 @@ class ObjectTracker:
     def calculate_proximity(self):
         # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
         r1 = random.randint(1, 100)
-        r2 = random.randint(0, 9)  # <-- inserted fault
+        if self.allow_fault:
+            r2 = random.randint(0, 9)  # <-- inserted fault
+        else:
+            r2 = random.randint(1, 9)
+
         result = r1 / r2
-        print("Object proximity is: " + str(result) + " meters away.")
+        print("PROXIMITY --> Object is: " + str(result) + " meters away.")
         return result
 
     def send_proximity_coordinates(self, data):
@@ -97,7 +102,7 @@ class ObjectTracker:
         return data
 
     @staticmethod
-    def run(queue):
+    def run(queue, allow_fault):
         """
         Method that runs when the class is called by Main as a process.
 
@@ -107,7 +112,7 @@ class ObjectTracker:
         Returns:
             None.
         """
-        heartbeat_sender = ObjectTracker(queue)
+        heartbeat_sender = ObjectTracker(queue, allow_fault)
 
         # Open a thread to send the heartbeat pulse
         t = threading.Thread(target=heartbeat_sender.send_pulse)
@@ -134,5 +139,5 @@ class ObjectTracker:
         daemon.requestLoop()
 
 
-# Start object tracker (this is like the '__main__' method)
-ObjectTracker.start_object_tracker()
+if __name__ == '__main__':
+    ObjectTracker.start_object_tracker()

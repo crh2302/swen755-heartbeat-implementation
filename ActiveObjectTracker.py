@@ -13,10 +13,10 @@ if __name__ == '__main__':
 
     # Create the Queue object and register it on the Pyro4 proxy
     queue_uri = daemon.register(queue)
-    print("Running <Redundant> Node :", str(queue_uri))
+    print("Running <Active> Node :", str(queue_uri))
 
-    ns.register("redundant.queue", queue_uri)
-    sender_process = multiprocessing.Process(name='Redundant Process', target=ObjectTracker.run, args=(queue, False))
+    ns.register("active.queue", queue_uri)
+    sender_process = multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue, True))
     sender_process.start()
 
     daemon.requestLoop()
