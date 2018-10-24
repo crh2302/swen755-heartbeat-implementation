@@ -22,15 +22,16 @@ class ObjectTracker:
         queue (object): The queue object used to communicate with the ThreatAssessmentModule process.
     """
 
-    def __init__(self, queue):
+    def __init__(self, queue, allow_fault):
         """
         The constructor for the ObjectTracker class.
 
         Parameters:
             queue (object): The queue object used for inter-process communication.
         """
-        self.sending_interval = 3
+        self.sending_interval = 1
         self.queue = queue
+        self.allow_fault = allow_fault
 
     def send_pulse(self):
         """
@@ -68,14 +69,22 @@ class ObjectTracker:
         Returns:
             None.
         """
-        # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
         while True:
-            r1 = random.randint(1, 100)
-            r2 = random.randint(0, 9)
-            result = r1 / r2
-            print("Division result: " + str(result))
+            result = self.calculate_proximity()
             self.send_proximity_coordinates(result)
             time.sleep(5)
+
+    def calculate_proximity(self):
+        # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
+        r1 = random.randint(1, 100)
+        if self.allow_fault:
+            r2 = random.randint(0, 9)  # <-- inserted fault
+        else:
+            r2 = random.randint(1, 9)
+
+        result = r1 / r2
+        print("PROXIMITY --> Object is: " + str(result) + " meters away.")
+        return result
 
     def send_proximity_coordinates(self, data):
         """
@@ -93,7 +102,7 @@ class ObjectTracker:
         return data
 
     @staticmethod
-    def run(queue):
+    def run(queue, allow_fault):
         """
         Method that runs when the class is called by Main as a process.
 
@@ -103,7 +112,7 @@ class ObjectTracker:
         Returns:
             None.
         """
-        heartbeat_sender = ObjectTracker(queue)
+        heartbeat_sender = ObjectTracker(queue, allow_fault)
 
         # Open a thread to send the heartbeat pulse
         t = threading.Thread(target=heartbeat_sender.send_pulse)
@@ -112,19 +121,23 @@ class ObjectTracker:
 
         heartbeat_sender.detect_nearby_object()
 
+    @staticmethod
+    def start_object_tracker():
+        multiprocessing.log_to_stderr(logging.INFO)
+        Pyro4.config.REQUIRE_EXPOSE = False
+
+        daemon = Pyro4.Daemon()  # make a Pyro4 daemon
+        ns = Pyro4.locateNS()  # find the name server
+        queue = multiprocessing.Queue()
+
+        # Create the Queue object and register it on the Pyro4 proxy
+        queue_uri = daemon.register(queue)
+        ns.register("heartbeat.queue", queue_uri)
+        sender_process = multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue,))
+        sender_process.start()
+
+        daemon.requestLoop()
+
 
 if __name__ == '__main__':
-    multiprocessing.log_to_stderr(logging.INFO)
-    Pyro4.config.REQUIRE_EXPOSE = False
-
-    daemon = Pyro4.Daemon()  # make a Pyro4 daemon
-    ns = Pyro4.locateNS()  # find the name server
-    queue = multiprocessing.Queue()
-
-    # Create the Queue object and register it on the Pyro4 proxy
-    queue_uri = daemon.register(queue)
-    ns.register("heartbeat.queue", queue_uri)
-    sender_process = multiprocessing.Process(name='HeartbeatSender Process', target=ObjectTracker.run, args=(queue,))
-    sender_process.start()
-
-    daemon.requestLoop()
+    ObjectTracker.start_object_tracker()

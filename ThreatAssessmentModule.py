@@ -1,9 +1,9 @@
 from threading import Thread, Timer, ThreadError
-import queue as q
 import multiprocessing
 import logging
 import Pyro4
 import time
+from subprocess import call
 
 
 @Pyro4.expose
@@ -31,11 +31,32 @@ class ThreatAssessmentModule:
         Parameters:
             queue (object): The queue object used for inter-process communication.
         """
+        self.queue = queue
+        self.pulse_tries_left = 3
+
         self.checking_interval = 3
         self.pulse_verification_interval = 1
+
         self.expire_time = 9
         self.last_updated_time = 0
-        self.queue = queue
+
+    def get_checking_interval(self):
+        """
+        Gets the checking interval of the class.
+
+        Returns:
+            checking_interval (int): Integer with the class' checking interval.
+        """
+        return self.checking_interval
+
+    def get_pulse_verification_interval(self):
+        """
+        Gets the pulse verification interval of the heartbeat tactic.
+
+        Returns:
+            pulse_verification_interval (int): Integer with the pulse verification interval of the heartbeat tactic.
+        """
+        return self.pulse_verification_interval
 
     def get_current_time(self):
         """
@@ -55,8 +76,6 @@ class ThreatAssessmentModule:
         """
         current_time = self.get_current_time()
         latency_time = current_time - self.last_updated_time
-        # print(f"HeartbeatReceiver MainThread says: current time: {current_time}; last updated time: {self.last_updated_time} ")
-        # print(f"HeartbeatReceiver MainThread says: latency_time: {latency_time} < expire_time: {self.expire_time} ")
         return latency_time < self.expire_time
 
     def pit_a_pat(self):
@@ -84,38 +103,6 @@ class ThreatAssessmentModule:
         """
         self.last_updated_time = self.get_current_time()
 
-    def message_receiver(self, info):
-        print(info)
-        msg = self.queue.get()
-        if msg == "send_pulse":
-            print("HeartbeatReceiver says: Pulse received")
-            self.pit_a_pat()
-        else:
-            print("HeartbeatReceiver says: No pulse found")
-
-    def monitor_alive(self, info):
-        print(info)
-        is_alive = self.check_alive()
-        print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
-
-    def get_checking_interval(self):
-        """
-        Gets the checking interval of the class.
-
-        Returns:
-            checking_interval (int): Integer with the class' checking interval.
-        """
-        return self.checking_interval
-
-    def get_pulse_verification_interval(self):
-        """
-        Gets the pulse verification interval of the heartbeat tactic.
-
-        Returns:
-            pulse_verification_interval (int): Integer with the pulse verification interval of the heartbeat tactic.
-        """
-        return self.pulse_verification_interval
-
     def timed_message_receiver(self, info):
         while True:
             # print(info)
@@ -137,7 +124,32 @@ class ThreatAssessmentModule:
             # print(info)
             is_alive = self.check_alive()
             print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
+
+            # Start the redundant process here
+            if not is_alive and self.pulse_tries_left <= 0:
+                self.activate_passive_node()
+                # TEST (COLD SPARING)
+                # redundant_tracker = Thread(target=self.call_redundant)
+                # redundant_tracker.start()
+                # self.test_entro = True
+
+            if self.pulse_tries_left > 0:
+                self.pulse_tries_left = self.pulse_tries_left - 1
             time.sleep(self.checking_interval)
+
+    def call_redundant(self):
+        call(['open', '-W', '-a', 'Terminal.app', 'RedundantObjectTracker.py'])
+
+    def activate_passive_node(self):
+        self.queue = Pyro4.Proxy("PYRONAME:redundant.queue")
+        print("activating backup queue", self.queue)
+
+    @staticmethod
+    def start_active_node():
+        Pyro4.config.REQUIRE_EXPOSE = False
+        # queue = Pyro4.Proxy("PYRONAME:heartbeat.queue")
+        queue = Pyro4.Proxy("PYRONAME:active.queue")
+        ThreatAssessmentModule.run(queue)
 
     @staticmethod
     def run(queue):
@@ -158,6 +170,7 @@ class ThreatAssessmentModule:
             print(e)
             print(e.args)
 
+        print("activating main queue", heartbeat_receiver.queue)
         heartbeat_receiver.timed_monitor_alive("HeartbeatReceiver Main Thread says: Monitoring if alive")
 
 
@@ -176,8 +189,4 @@ def set_interval(sec, func, *args):
 
 
 if __name__ == '__main__':
-    multiprocessing.log_to_stderr(logging.INFO)
-    Pyro4.config.REQUIRE_EXPOSE = False
-    queue = Pyro4.Proxy("PYRONAME:heartbeat.queue")
-
-    ThreatAssessmentModule.run(queue)
+    ThreatAssessmentModule.start_active_node()
