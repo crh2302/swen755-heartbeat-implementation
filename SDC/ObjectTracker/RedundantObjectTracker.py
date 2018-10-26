@@ -1,7 +1,7 @@
 #!//usr/local/Cellar/python3/3.6.3/Frameworks/Python.framework/Versions/3.6/bin/python3.6
 import multiprocessing
 import Pyro4
-from ObjectTracker import ObjectTracker
+from SDC.ObjectTracker import ObjectTracker
 
 
 if __name__ == '__main__':
@@ -13,10 +13,10 @@ if __name__ == '__main__':
 
     # Create the Queue object and register it on the Pyro4 proxy
     queue_uri = daemon.register(queue)
-    print("Running <Active> Node :", str(queue_uri))
+    print("Running <Redundant> Node :", str(queue_uri))
 
-    ns.register("active.queue", queue_uri)
-    sender_process = multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue, True))
+    ns.register("redundant.queue", queue_uri)
+    sender_process = multiprocessing.Process(name='Redundant Process', target=ObjectTracker.run, args=(queue, False))
     sender_process.start()
 
     daemon.requestLoop()

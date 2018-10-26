@@ -1,17 +1,16 @@
 from threading import Thread, Timer, ThreadError
-import multiprocessing
-import logging
 import Pyro4
 import time
+import queue
 import enum
 from subprocess import call
-from constants import LOG_PIPELINE_FILENAME
+from time import gmtime, strftime
 
 
 # Enum that contains the module types for the ObjectTrackers (active or passive)
-class NodeType(enum.Enum):
-    active = 1
-    passive = 2
+# class NodeType(enum.Enum):
+#     active = 1
+#     passive = 2
 
 
 @Pyro4.expose
@@ -32,7 +31,7 @@ class ThreatAssessmentModule:
             queue (object): The queue object used to communicate with the ThreatAssessmentModule process.
     """
 
-    def __init__(self, node):
+    def __init__(self, cs):
         """
         The constructor for the ThreatAssessmentModule class.
 
@@ -40,9 +39,9 @@ class ThreatAssessmentModule:
             node (NodeType): Defines wherever start communication with the active or the passive process.
         """
 
-        self.queue = None   # the queue object used for inter-process communication. Defined in the activate_node method
-        self.activate_node(node)
-        self.current_node = node
+        #self.queue = None   # the queue object used for inter-process communication. Defined in the activate_node method
+        #self.activate_node(node)
+        #self.current_node = node
         self.pulse_tries_left = 3
 
         self.checking_interval = 3
@@ -50,33 +49,7 @@ class ThreatAssessmentModule:
 
         self.expire_time = 9
         self.last_updated_time = 0
-
-    def get_checking_interval(self):
-        """
-        Gets the checking interval of the class.
-
-        Returns:
-            checking_interval (int): Integer with the class' checking interval.
-        """
-        return self.checking_interval
-
-    def get_pulse_verification_interval(self):
-        """
-        Gets the pulse verification interval of the heartbeat tactic.
-
-        Returns:
-            pulse_verification_interval (int): Integer with the pulse verification interval of the heartbeat tactic.
-        """
-        return self.pulse_verification_interval
-
-    def get_current_time(self):
-        """
-        Gets the current time of the system.
-
-        Returns:
-            time (time): Object with the current system's time.
-        """
-        return int(time.time())
+        self.fault_manager_cs = cs
 
     def check_alive(self):
         """
@@ -85,7 +58,7 @@ class ThreatAssessmentModule:
         Returns:
             is_alive (bool): Says wherever the heartbeat pulse is present or not.
         """
-        current_time = self.get_current_time()
+        current_time = time.time()
         latency_time = current_time - self.last_updated_time
         return latency_time < self.expire_time
 
@@ -111,20 +84,30 @@ class ThreatAssessmentModule:
         Returns:
             None.
         """
-        self.last_updated_time = self.get_current_time()
+        self.last_updated_time = time.time()
 
     def timed_message_receiver(self):
         while True:
             try:
-                msg = self.queue.get_nowait()
+                msg = self.fault_manager_cs.get_heartbeat_message()
+                msg_list = msg.split("|")
+                source = msg_list[0]
+                event = msg_list[1]
+            except IndexError as e:
+                print("Invalid message format")
+                event = ""
+                source = ""
+
             except Exception as e:
-                msg = ""
-            source = "'Main' tracker" if self.current_node == NodeType.active else "'Backup' tracker"
-            if msg == "send_pulse":
-                print("HeartbeatReceiver says: Pulse received from " + source)
+                print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + str(e))
+                event = ""
+                source = ""
+
+            if event == "heartbeat_pulse":
+                print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + f"HeartbeatReceiver says: Pulse received from node: {source}")
                 self.pit_a_pat()
             else:
-                print("HeartbeatReceiver says: No pulse found")
+                print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + "HeartbeatReceiver says: No pulse found")
 
             time.sleep(self.pulse_verification_interval)
 
@@ -132,30 +115,26 @@ class ThreatAssessmentModule:
         while True:
             # print(info)
             is_alive = self.check_alive()
-            print("HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + "HeartbeatReceiver Main Thread says: Is alive? ", is_alive)
 
-            # Start the redundant process here
+            #Start the redundant process here
             if not is_alive and self.pulse_tries_left <= 0:
-                self.activate_node(NodeType.passive)
-                # TEST (COLD SPARING)
+                self.activate_other_node()
 
             if self.pulse_tries_left > 0:
                 self.pulse_tries_left = self.pulse_tries_left - 1
             time.sleep(self.checking_interval)
 
-    def call_redundant(self):
-        call(['open', '-W', '-a', 'Terminal.app', 'RedundantObjectTracker.py'])
+    def activate_other_node(self):
 
-    def activate_node(self, node):
-        if node == NodeType.active:
-            self.queue = Pyro4.Proxy("PYRONAME:active.queue")
-            print("Activating main(active) queue...")
-        elif node == NodeType.passive:
-            self.queue = Pyro4.Proxy("PYRONAME:redundant.queue")
-            print("Activating backup(redundant) queue...")
-        else:
-            raise ValueError("'node' must be either active(1) or passive(2)")
-        self.current_node = node
+        try:
+            self.fault_manager_cs.activate_node()
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + "Requesting activation of online node------------")
+        except Pyro4.errors.CommunicationError as error:
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + f" On activate_other_node(),the communication has failed {error}")
+        except Exception as error:
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + f" On activate_other_node(): dead_node {error}")
+
 
     def run(self):
         """
@@ -171,26 +150,14 @@ class ThreatAssessmentModule:
             print(e)
             print(e.args)
 
-        print("activating main queue", self.queue)
-        self.timed_monitor_alive("HeartbeatReceiver Main Thread says: Monitoring if alive")
-
-
-def set_interval(sec, func, *args):
-    def func_wrapper():
-        set_interval(sec, func, *args)
-        func(*args)
-    t = Timer(sec, func_wrapper)
-    try:
-        t.start()
-    except (RuntimeError, ThreadError, ) as e:
-        print(e)
-        print(e.args)
-    return t
+        self.timed_monitor_alive(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":"+ "HeartbeatReceiver Main Thread says: Monitoring if alive")
 
 
 if __name__ == '__main__':
     # Pyro4 configuration settings
-    Pyro4.config.REQUIRE_EXPOSE = False
+    cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
+    cs.activate_node()
 
-    heartbeat_receiver = ThreatAssessmentModule(NodeType.active)
-    heartbeat_receiver.run()
+    # print(f"Communication service in ThreatAssessmentModule: {cs}")
+    # heartbeat_receiver = ThreatAssessmentModule(cs)
+    # heartbeat_receiver.run()
