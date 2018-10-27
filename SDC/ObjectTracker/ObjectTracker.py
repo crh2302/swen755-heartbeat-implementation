@@ -38,12 +38,12 @@ class ObjectTracker:
 
 
         # Array containing the method steps to the Pipe-And-Filter pattern
-        # self.pipeline_steps = [
-        #     self.split_string,
-        #     self.convert_to_int,
-        #     self.get_sum_and_size,
-        #     self.get_average
-        # ]
+        self.pipeline_steps = [
+            self.split_string,
+            self.convert_to_int,
+            self.get_sum_and_size,
+            self.get_average
+        ]
 
     def send_pulse(self):
         """
@@ -243,35 +243,33 @@ class ObjectTracker:
         t.daemon = True
         t.start()
 
-        t.join()
+        #t.join()
 
-        #daemon.requestLoop()
-#        t.join()
 
-        # print("LLEGO  AQUI")
+        print("LLEGO  AQUI")
 
         #object_tracker.detect_nearby_object()
 
-        # # Synchronization code:
-        # # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
-        # while True:
-        #     # Get the input data
-        #     # TODO: This is hardcoded for now, but the data should come from a Pyro4 queue
-        #     data = "1,2,3,4,5"
-        #
-        #     # TODO: Synchronize with the pipeline-log.txt to check the last executed method
-        #     last_line = open(LOG_PIPELINE_FILENAME, "r").readlines()[-1]
-        #     function_name = last_line.split(';')[0]
-        #     function_result = eval(last_line.split(';')[1])  # eval is used to convert from string to object
-        #
-        #     # TODO:
-        #     # The 'data' parameter here should be either the input (for the active tracker)
-        #     # or the function_result (for the redundant tracker)
-        #     # The 'last_step' parameter should have the function_name on the redundant tracker
-        #     result = object_tracker.calculate_pipeline_data(data, "")
-        #     object_tracker.send_proximity_coordinates(result)
-        #
-        #     print("The end result of the pipeline is: " + str(result))
+        # Synchronization code:
+        # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
+        while True:
+            # Get the input data
+            # TODO: This is hardcoded for now, but the data should come from a Pyro4 queue
+            data = "1,2,3,4,5"
+
+            # TODO: Synchronize with the pipeline-log.txt to check the last executed method
+            last_line = open(LOG_PIPELINE_FILENAME, "r").readlines()[-1]
+            function_name = last_line.split(';')[0]
+            function_result = eval(last_line.split(';')[1])  # eval is used to convert from string to object
+
+            # TODO:
+            # The 'data' parameter here should be either the input (for the active tracker)
+            # or the function_result (for the redundant tracker)
+            # The 'last_step' parameter should have the function_name on the redundant tracker
+            result = object_tracker.calculate_pipeline_data(data, "")
+            object_tracker.post_results(result)
+
+            print("The end result of the pipeline is: " + str(result))
 
     # @staticmethod
     # def start_object_tracker():
