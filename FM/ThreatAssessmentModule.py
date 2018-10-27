@@ -133,7 +133,7 @@ class ThreatAssessmentModule:
         except Pyro4.errors.CommunicationError as error:
             print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + f" On activate_other_node(),the communication has failed {error}")
         except Exception as error:
-            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + f" On activate_other_node(): dead_node {error}")
+            print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":" + f" Exception: {error}")
 
 
     def run(self):
@@ -156,8 +156,8 @@ class ThreatAssessmentModule:
 if __name__ == '__main__':
     # Pyro4 configuration settings
     cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
-    cs.activate_node()
+    # cs.activate_node()
 
-    # print(f"Communication service in ThreatAssessmentModule: {cs}")
-    # heartbeat_receiver = ThreatAssessmentModule(cs)
-    # heartbeat_receiver.run()
+    print(f"Communication service in ThreatAssessmentModule: {cs}")
+    heartbeat_receiver = ThreatAssessmentModule(cs)
+    heartbeat_receiver.run()

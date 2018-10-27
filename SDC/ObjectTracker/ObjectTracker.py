@@ -33,8 +33,8 @@ class ObjectTracker:
         self.fault_manager_cs = cs
         self.allow_fault = allow_fault
         self.time_between_steps = 5
-        self.isActive = True
-        self.id = 1
+        self.isActive = False
+        self.id = 2
 
 
         # Array containing the method steps to the Pipe-And-Filter pattern
@@ -61,11 +61,14 @@ class ObjectTracker:
             None.
         """
         while multiprocessing.current_process().is_alive():
-            if self.isActive:
                 try:
-                    message = str(self.id) + "|"+ "heartbeat_pulse"
-                    self.fault_manager_cs.put_heartbeat_message(message)
-                    print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":Sending heartbeat message: I'm alive")
+                    if self.isActive:
+                        message = str(self.id) + "|"+ "heartbeat_pulse"
+                        self.fault_manager_cs.put_heartbeat_message(message)
+                        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":Sending heartbeat message: I'm alive")
+                    else:
+                        print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":Not sending heartbeat message")
+
                 except Pyro4.errors.NamingError as naming_error:
                     print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":Sending heartbeat message:{naming_error}. Check if pyro4 server is online. Run pyro4-ns")
                 except Exception as e:
@@ -93,17 +96,17 @@ class ObjectTracker:
     #         self.calculate_proximity()
     #         time.sleep(5)
 
-    # def calculate_proximity(self):
-    #     # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
-    #     r1 = random.randint(1, 100)
-    #     if self.allow_fault:
-    #         r2 = random.randint(0, 9)  # <-- inserted fault
-    #     else:
-    #         r2 = random.randint(1, 9)
-    #
-    #     result = r1 / r2
-    #     print("PROXIMITY --> Object is: " + str(result) + " meters away.")
-    #     return result
+    def calculate_proximity(self):
+        # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
+        r1 = random.randint(1, 100)
+        if self.allow_fault:
+            r2 = random.randint(0, 9)  # <-- inserted fault
+        else:
+            r2 = random.randint(1, 9)
+
+        result = r1 / r2
+        print("PROXIMITY --> Object is: " + str(result) + " meters away.")
+        return result
 
     def post_results(self, data):
         """
@@ -127,75 +130,74 @@ class ObjectTracker:
             except:
                 pass
 
+    def calculate_pipeline_data(self, data, last_step=""):
+        def get_step_index(items, step_name):
+            for index, step in enumerate(items):
+                if step.__name__ == step_name:
+                    return index
+                else:
+                    continue
+            return -1
 
-    # def calculate_pipeline_data(self, data, last_step=""):
-    #     def get_step_index(items, step_name):
-    #         for index, step in enumerate(items):
-    #             if step.__name__ == step_name:
-    #                 return index
-    #             else:
-    #                 continue
-    #         return -1
-    #
-    #     if last_step != "":
-    #         step_index = get_step_index(self.pipeline_steps, last_step)
-    #         remaining_steps = self.pipeline_steps[step_index + 1:]
-    #         print(remaining_steps)
-    #         result = self.combine_pipeline(data, remaining_steps)
-    #     else:
-    #         result = self.combine_pipeline(data, self.pipeline_steps)
-    #     return result
-    #
-    # # Processing step methods
-    # @staticmethod
-    # def split_string(item):
-    #     # First step: split a String of the form "1,2,3,4,5" on an array, using commas as the delimiter
-    #     # Input: "1,2,3,4,5" => Output: ["1","2","3","4","5"]
-    #     result = item.split(',')
-    #     with open(LOG_PIPELINE_FILENAME, "a") as file:
-    #         file.write("split_string;" + repr(result) + "\n")
-    #     return result
-    #
-    # @staticmethod
-    # def convert_to_int(item):
-    #     # Second step: converts the Strings of the previous array into integers
-    #     # Input: ["1","2","3","4","5"] => Output: [1,2,3,4,5]
-    #     result = [int(i) for i in item]
-    #     with open(LOG_PIPELINE_FILENAME, "a") as file:
-    #         file.write("convert_to_int;" + repr(result) + "\n")
-    #     return result
-    #
-    # @staticmethod
-    # def get_sum_and_size(items):
-    #     # Processing for this step goes here
-    #     # Third step: takes the array of integers, and returns a 'sum' and a 'size' value in a dictionary
-    #     # Input: [1,2,3,4,5] => Output: { 'sum': 15, 'size': 5 }
-    #     result = {'sum': sum(items), 'size': len(items)}
-    #     with open(LOG_PIPELINE_FILENAME, "a") as file:
-    #         file.write("get_sum_and_size;" + repr(result) + "\n")
-    #     return result
-    #
-    # @staticmethod
-    # def get_average(item):
-    #     # Fourth step: use the sum and size values to calculate the average (sum / size)
-    #     # Input: { 'sum': 15, 'size': 5 } => Output: 3
-    #     result = item['sum'] / item['size']
-    #     with open(LOG_PIPELINE_FILENAME, "a") as file:
-    #         file.write("get_average;" + repr(result) + "\n")
-    #     return result
-    # # End of processing step methods
+        if last_step != "":
+            step_index = get_step_index(self.pipeline_steps, last_step)
+            remaining_steps = self.pipeline_steps[step_index + 1:]
+            print(remaining_steps)
+            result = self.combine_pipeline(data, remaining_steps)
+        else:
+            result = self.combine_pipeline(data, self.pipeline_steps)
+        return result
 
-    # def combine_pipeline(self, source, pipeline):
-    #     """
-    #     Combines source and pipeline and return a generator.
-    #     """
-    #     gen = source
-    #     for step in pipeline:
-    #         gen = step(gen)
-    #         print("The result of the step " + step.__name__ + " is: ")
-    #         print(gen)
-    #         time.sleep(self.time_between_steps)
-    #     return gen
+    # Processing step methods
+    @staticmethod
+    def split_string(item):
+        # First step: split a String of the form "1,2,3,4,5" on an array, using commas as the delimiter
+        # Input: "1,2,3,4,5" => Output: ["1","2","3","4","5"]
+        result = item.split(',')
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("split_string;" + repr(result) + "\n")
+        return result
+
+    @staticmethod
+    def convert_to_int(item):
+        # Second step: converts the Strings of the previous array into integers
+        # Input: ["1","2","3","4","5"] => Output: [1,2,3,4,5]
+        result = [int(i) for i in item]
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("convert_to_int;" + repr(result) + "\n")
+        return result
+
+    @staticmethod
+    def get_sum_and_size(items):
+        # Processing for this step goes here
+        # Third step: takes the array of integers, and returns a 'sum' and a 'size' value in a dictionary
+        # Input: [1,2,3,4,5] => Output: { 'sum': 15, 'size': 5 }
+        result = {'sum': sum(items), 'size': len(items)}
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("get_sum_and_size;" + repr(result) + "\n")
+        return result
+
+    @staticmethod
+    def get_average(item):
+        # Fourth step: use the sum and size values to calculate the average (sum / size)
+        # Input: { 'sum': 15, 'size': 5 } => Output: 3
+        result = item['sum'] / item['size']
+        with open(LOG_PIPELINE_FILENAME, "a") as file:
+            file.write("get_average;" + repr(result) + "\n")
+        return result
+    # End of processing step methods
+
+    def combine_pipeline(self, source, pipeline):
+        """
+        Combines source and pipeline and return a generator.
+        """
+        gen = source
+        for step in pipeline:
+            gen = step(gen)
+            print("The result of the step " + step.__name__ + " is: ")
+            print(gen)
+            time.sleep(self.time_between_steps)
+        return gen
 
 
     @staticmethod
@@ -224,9 +226,13 @@ class ObjectTracker:
             uri = daemon.register(object_tracker)
             registering_string = "ObjectTracker"+str(object_tracker.getID())
             ns.register(registering_string, uri)
+            print("subscribing:")
             cs.subscribe(registering_string)
             print("Registration completed")
             print("Ready.")
+            t2 = threading.Thread(target=daemon.requestLoop)
+            t2.daemon = True
+            t2.start()
 
         except Pyro4.errors.NamingError as naming_error:
             print(f"{naming_error}. Check if Pyro4 service is online. Run pyro4-ns")
@@ -236,11 +242,16 @@ class ObjectTracker:
         t = threading.Thread(target=object_tracker.send_pulse)
         t.daemon = True
         t.start()
-        daemon.requestLoop()
+
+        t.join()
+
+        #daemon.requestLoop()
 #        t.join()
 
-        # #object_tracker.detect_nearby_object()
-        #
+        # print("LLEGO  AQUI")
+
+        #object_tracker.detect_nearby_object()
+
         # # Synchronization code:
         # # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
         # while True:
@@ -288,7 +299,14 @@ class ObjectTracker:
     @Pyro4.expose
     def activate(self):
         print("activate")
-        #self.isActive = False
+        if(self.isActive):
+            self.isActive = False
+        else:
+            self.isActive = True
+
+
+
+
 
     def update(self,event):
         if "active_node_selection" == event:

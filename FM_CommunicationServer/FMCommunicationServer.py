@@ -22,6 +22,7 @@ class FMCommunicationService:
     @Pyro4.expose
     def subscribe(self, subscriber):
         self.subscribers.append(subscriber)
+        print(f"Subscriber:{subscriber} and {len(self.subscribers)} length")
 
     @Pyro4.expose
     def unsubscribe(self,subscriber):
@@ -30,13 +31,14 @@ class FMCommunicationService:
     @Pyro4.expose
     def activate_node(self):
         for item in self.subscribers:
+            print("ESTO:"+item)
             m = Pyro4.Proxy("PYRONAME:"+item)
             try:
                 m.activate()
                 print("activate_node try")
-            except Exception:
-                raise Exception("empty object")
-                print("activate_node excep")
+            except Exception as error:
+                print(f"activate_node excep + {error}")
+                continue
 
 
     @Pyro4.expose
