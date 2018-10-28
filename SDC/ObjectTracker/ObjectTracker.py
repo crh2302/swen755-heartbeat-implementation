@@ -149,41 +149,43 @@ class ObjectTracker:
         return result
 
     # Processing step methods
-    @staticmethod
-    def split_string(item):
+
+    def split_string(self, item):
         # First step: split a String of the form "1,2,3,4,5" on an array, using commas as the delimiter
         # Input: "1,2,3,4,5" => Output: ["1","2","3","4","5"]
         result = item.split(',')
-        with open(LOG_PIPELINE_FILENAME, "a") as file:
-            file.write("split_string;" + repr(result) + "\n")
+        if self.isActive:
+            with open(LOG_PIPELINE_FILENAME, "a") as file:
+                file.write("split_string;" + repr(result) + "\n")
         return result
 
-    @staticmethod
-    def convert_to_int(item):
+
+    def convert_to_int(self, item):
         # Second step: converts the Strings of the previous array into integers
         # Input: ["1","2","3","4","5"] => Output: [1,2,3,4,5]
         result = [int(i) for i in item]
-        with open(LOG_PIPELINE_FILENAME, "a") as file:
-            file.write("convert_to_int;" + repr(result) + "\n")
+        if self.isActive:
+            with open(LOG_PIPELINE_FILENAME, "a") as file:
+                file.write("convert_to_int;" + repr(result) + "\n")
         return result
 
-    @staticmethod
-    def get_sum_and_size(items):
+    def get_sum_and_size(self, items):
         # Processing for this step goes here
         # Third step: takes the array of integers, and returns a 'sum' and a 'size' value in a dictionary
         # Input: [1,2,3,4,5] => Output: { 'sum': 15, 'size': 5 }
         result = {'sum': sum(items), 'size': len(items)}
-        with open(LOG_PIPELINE_FILENAME, "a") as file:
-            file.write("get_sum_and_size;" + repr(result) + "\n")
+        if self.isActive:
+            with open(LOG_PIPELINE_FILENAME, "a") as file:
+                file.write("get_sum_and_size;" + repr(result) + "\n")
         return result
 
-    @staticmethod
-    def get_average(item):
+    def get_average(self, item):
         # Fourth step: use the sum and size values to calculate the average (sum / size)
         # Input: { 'sum': 15, 'size': 5 } => Output: 3
         result = item['sum'] / item['size']
-        with open(LOG_PIPELINE_FILENAME, "a") as file:
-            file.write("get_average;" + repr(result) + "\n")
+        if self.isActive:
+            with open(LOG_PIPELINE_FILENAME, "a") as file:
+                file.write("get_average;" + repr(result) + "\n")
         return result
     # End of processing step methods
 
@@ -198,7 +200,6 @@ class ObjectTracker:
             print(gen)
             time.sleep(self.time_between_steps)
         return gen
-
 
     @staticmethod
     def run(allow_fault):
@@ -220,11 +221,11 @@ class ObjectTracker:
             print("Locating Pyro4 nameserver")
             ns = Pyro4.locateNS()
             print("Pyro4 nameserver located")
-            print("Registering ObjectTracker"+str(object_tracker.getID()))
+            print("Registering ObjectTracker" + str(object_tracker.get_id()))
             cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
             object_tracker = ObjectTracker(cs, allow_fault)
             uri = daemon.register(object_tracker)
-            registering_string = "ObjectTracker"+str(object_tracker.getID())
+            registering_string = "ObjectTracker"+str(object_tracker.get_id())
             ns.register(registering_string, uri)
             print("subscribing:")
             cs.subscribe(registering_string)
@@ -244,9 +245,6 @@ class ObjectTracker:
         t.start()
 
         #t.join()
-
-
-        print("LLEGO  AQUI")
 
         #object_tracker.detect_nearby_object()
 
@@ -271,6 +269,13 @@ class ObjectTracker:
 
             print("The end result of the pipeline is: " + str(result))
 
+    def synchronize_data(self):
+        if self.isActive:
+            pass
+        else:
+            pass
+        pass
+
     # @staticmethod
     # def start_object_tracker():
     #     multiprocessing.log_to_stderr(logging.INFO)
@@ -291,20 +296,16 @@ class ObjectTracker:
     # def post_result(self):
     #     pass
 
-    def getID(self):
+    def get_id(self):
         return self.id
 
     @Pyro4.expose
     def activate(self):
         print("activate")
-        if(self.isActive):
+        if self.isActive:
             self.isActive = False
         else:
             self.isActive = True
-
-
-
-
 
     def update(self,event):
         if "active_node_selection" == event:

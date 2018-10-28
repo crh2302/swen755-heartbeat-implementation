@@ -6,6 +6,7 @@ class CommunicationService:
 
     def __init__(self):
         self.result_queue = multiprocessing.Queue()
+        self.sensor_queue = multiprocessing.Queue()
 
     @Pyro4.expose
     def get_value_result_queue(self):
@@ -14,6 +15,14 @@ class CommunicationService:
     @Pyro4.expose
     def set_value_result_queue(self,ele):
         return self.result_queue.put(ele)
+
+    @Pyro4.expose
+    def get_value_sensor_queue(self):
+        return self.sensor_queue.get(block=False)
+
+    @Pyro4.expose
+    def set_value_sensor_queue(self, ele):
+        return self.sensor_queue.put(ele)
 
 
 def init():
