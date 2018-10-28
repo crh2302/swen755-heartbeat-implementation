@@ -2,7 +2,6 @@ import random
 import time
 import threading
 import multiprocessing
-import logging
 import Pyro4
 from time import gmtime, strftime
 from SDC.ObjectTracker.constants import LOG_PIPELINE_FILENAME
@@ -22,7 +21,7 @@ class ObjectTracker:
         queue (object): The queue object used to communicate with the ThreatAssessmentModule process.
     """
 
-    def __init__(self, cs, allow_fault):
+    def __init__(self, cs, _id, is_active, allow_fault):
         """
         The constructor for the ObjectTracker class.
 
@@ -33,8 +32,8 @@ class ObjectTracker:
         self.fault_manager_cs = cs
         self.allow_fault = allow_fault
         self.time_between_steps = 5
-        self.isActive = False
-        self.id = 2
+        self.isActive = is_active
+        self.id = _id
 
 
         # Array containing the method steps to the Pipe-And-Filter pattern
@@ -201,80 +200,96 @@ class ObjectTracker:
             time.sleep(self.time_between_steps)
         return gen
 
-    @staticmethod
-    def run(allow_fault):
-
-        """
-        Method that runs when the class is called by Main as a process.
-
-        Parameters:
-            queue (object): The queue object used for inter-process communication.
-
-        Returns:
-            None.
-        """
-        cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
-        object_tracker = ObjectTracker(cs, allow_fault)
-
-        try:
-            daemon = Pyro4.Daemon()
-            print("Locating Pyro4 nameserver")
-            ns = Pyro4.locateNS()
-            print("Pyro4 nameserver located")
-            print("Registering ObjectTracker" + str(object_tracker.get_id()))
-            cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
-            object_tracker = ObjectTracker(cs, allow_fault)
-            uri = daemon.register(object_tracker)
-            registering_string = "ObjectTracker"+str(object_tracker.get_id())
-            ns.register(registering_string, uri)
-            print("subscribing:")
-            cs.subscribe(registering_string)
-            print("Registration completed")
-            print("Ready.")
-            t2 = threading.Thread(target=daemon.requestLoop)
-            t2.daemon = True
-            t2.start()
-
-        except Pyro4.errors.NamingError as naming_error:
-            print(f"{naming_error}. Check if Pyro4 service is online. Run pyro4-ns")
-        except Exception as e:
-            print(f"Exception at main(). More info:{e}")
-
-        t = threading.Thread(target=object_tracker.send_pulse)
-        t.daemon = True
-        t.start()
-
-        #t.join()
-
-        #object_tracker.detect_nearby_object()
-
-        # Synchronization code:
-        # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
-        while True:
-            # Get the input data
-            # TODO: This is hardcoded for now, but the data should come from a Pyro4 queue
-            data = "1,2,3,4,5"
-
-            # TODO: Synchronize with the pipeline-log.txt to check the last executed method
-            last_line = open(LOG_PIPELINE_FILENAME, "r").readlines()[-1]
-            function_name = last_line.split(';')[0]
-            function_result = eval(last_line.split(';')[1])  # eval is used to convert from string to object
-
-            # TODO:
-            # The 'data' parameter here should be either the input (for the active tracker)
-            # or the function_result (for the redundant tracker)
-            # The 'last_step' parameter should have the function_name on the redundant tracker
-            result = object_tracker.calculate_pipeline_data(data, "")
-            object_tracker.post_results(result)
-
-            print("The end result of the pipeline is: " + str(result))
-
     def synchronize_data(self):
         if self.isActive:
             pass
         else:
             pass
         pass
+
+    def get_id(self):
+        return self.id
+
+    @Pyro4.expose
+    def activate(self):
+        print("activate")
+        if self.isActive:
+            self.isActive = False
+        else:
+            self.isActive = True
+
+    def update(self,event):
+        if "active_node_selection" == event:
+            pass
+
+
+def run(_id, is_active, allow_fault):
+
+    """
+    Method that runs when the class is called by Main as a process.
+
+    Parameters:
+        queue (object): The queue object used for inter-process communication.
+
+    Returns:
+        None.
+    """
+    cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
+    object_tracker = ObjectTracker(cs, _id, is_active, allow_fault)
+
+    try:
+        daemon = Pyro4.Daemon()
+        print("Locating Pyro4 nameserver")
+        ns = Pyro4.locateNS()
+        print("Pyro4 nameserver located")
+        print("Registering ObjectTracker" + str(object_tracker.get_id()))
+        cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
+        uri = daemon.register(object_tracker)
+        registering_string = "ObjectTracker"+str(object_tracker.get_id())
+        ns.register(registering_string, uri)
+        print("subscribing:")
+        cs.subscribe(registering_string)
+        print("Registration completed")
+        print("Ready.")
+        t2 = threading.Thread(target=daemon.requestLoop)
+        t2.daemon = True
+        t2.start()
+
+    except Pyro4.errors.NamingError as naming_error:
+        print(f"{naming_error}. Check if Pyro4 service is online. Run pyro4-ns")
+    except Exception as e:
+        print(f"Exception at main(). More info:{e}")
+
+    t = threading.Thread(target=object_tracker.send_pulse)
+    t.daemon = True
+    t.start()
+
+    #t.join()
+
+    #object_tracker.detect_nearby_object()
+
+    # Synchronization code:
+    # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
+    while True:
+        # Get the input data
+        # TODO: This is hardcoded for now, but the data should come from a Pyro4 queue
+        data = "1,2,3,4,5"
+
+        # TODO: Synchronize with the pipeline-log.txt to check the last executed method
+        last_line = open(LOG_PIPELINE_FILENAME, "r").readlines()[-1]
+        function_name = last_line.split(';')[0]
+        function_result = eval(last_line.split(';')[1])  # eval is used to convert from string to object
+
+        # TODO:
+        # The 'data' parameter here should be either the input (for the active tracker)
+        # or the function_result (for the redundant tracker)
+        # The 'last_step' parameter should have the function_name on the redundant tracker
+        result = object_tracker.calculate_pipeline_data(data, "")
+        object_tracker.post_results(result)
+
+        print("The end result of the pipeline is: " + str(result))
+
+
 
     # @staticmethod
     # def start_object_tracker():
@@ -296,21 +311,8 @@ class ObjectTracker:
     # def post_result(self):
     #     pass
 
-    def get_id(self):
-        return self.id
 
-    @Pyro4.expose
-    def activate(self):
-        print("activate")
-        if self.isActive:
-            self.isActive = False
-        else:
-            self.isActive = True
-
-    def update(self,event):
-        if "active_node_selection" == event:
-            pass
 
 
 if __name__ == '__main__':
-    ObjectTracker.run(False)
+    ObjectTracker.run(1, True, True)
