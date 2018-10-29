@@ -31,7 +31,6 @@ class FMCommunicationService:
     @Pyro4.expose
     def activate_node(self):
         for item in self.subscribers:
-            print("ESTO:"+item)
             m = Pyro4.Proxy("PYRONAME:"+item)
             try:
                 m.activate()

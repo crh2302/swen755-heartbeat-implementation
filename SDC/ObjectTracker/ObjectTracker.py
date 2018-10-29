@@ -96,7 +96,7 @@ class ObjectTracker:
     #         self.calculate_proximity()
     #         time.sleep(5)
 
-    def calculate_proximity(self):
+    def inject_error(self):
         # This code block contains a fault thar will generate a ZeroDivisionError 10% of the time every 5 secs
         r1 = random.randint(1, 100)
         if self.allow_fault:
@@ -105,8 +105,8 @@ class ObjectTracker:
             r2 = random.randint(1, 9)
 
         result = r1 / r2
-        print("PROXIMITY --> Object is: " + str(result) + " meters away.")
-        return result
+        #print("PROXIMITY --> Object is: " + str(result) + " meters away.")
+        #return result
 
     def post_results(self, data):
         """
@@ -282,6 +282,9 @@ def run(_id, is_active, allow_fault):
                 # Get the input data4
                 if object_tracker.is_active:
                     data = object_tracker.data_manager_cs.get_value_sensor_queue()
+
+                    # this line injects the code in the active node
+                    object_tracker.inject_error()
 
                     sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
                     result = object_tracker.calculate_pipeline_data(sync_result[0], sync_result[1])
