@@ -222,10 +222,7 @@ class ObjectTracker:
     @Pyro4.expose
     def activate(self):
         print("activate")
-        if self.is_active:
-            self.is_active = False
-        else:
-            self.is_active = True
+        self.is_active = True
 
     def update(self, event):
         if "active_node_selection" == event:
@@ -291,7 +288,7 @@ def run(_id, is_active, allow_fault):
                     object_tracker.post_results(result)
                     print("The end result of the pipeline is: " + str(result))
                 else:
-                    print("Not sync")
+                    pass
 
             except Exception as e:
                 pass
