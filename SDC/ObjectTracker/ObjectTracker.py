@@ -17,8 +17,11 @@ class ObjectTracker:
     class.
 
     Attributes:
-        sending_interval (int): The number that sets the interval for the heartbeat updates.
-        queue (object): The queue object used to communicate with the ThreatAssessmentModule process.
+        cs                  FMCommunicationServer used for communicating the processes involved for fault managing
+        _id                 The identifier of the object tracker
+        is_active           True for active, False if passive
+        allow_fault         Allows for the fault for the simulationi
+        data_manager_cs     object for communicating data among domain objects
     """
 
     def __init__(self, cs, _id, is_active, allow_fault, data_manager_cs):
@@ -28,11 +31,11 @@ class ObjectTracker:
         Parameters:
             cs (object): The object containing the queue used for inter-process communication.
         """
-        self.sending_interval = 1
+        self.sending_interval = 0.25
         self.fault_manager_cs = cs
         self.data_manager_cs = data_manager_cs
         self.allow_fault = allow_fault
-        self.time_between_steps = 5
+        self.time_between_steps = 0.20
         self.is_active = is_active
         self.id = _id
         self.is_up_to_date = False
@@ -104,6 +107,8 @@ class ObjectTracker:
         else:
             r2 = random.randint(1, 9)
 
+        if not r2:
+            print("DIVISION BY ZERO")
         result = r1 / r2
         #print("PROXIMITY --> Object is: " + str(result) + " meters away.")
         #return result
@@ -277,23 +282,18 @@ def run(_id, is_active, allow_fault):
     # Synchronization code:
     while True:
         # This should run only when the tracker is marked as Active
+            # Get the input data4
+            if object_tracker.is_active:
+                data = object_tracker.data_manager_cs.get_value_sensor_queue()
 
-            try:
-                # Get the input data4
-                if object_tracker.is_active:
-                    data = object_tracker.data_manager_cs.get_value_sensor_queue()
+                # this line injects the code in the active node
+                object_tracker.inject_error()
 
-                    # this line injects the code in the active node
-                    object_tracker.inject_error()
-
-                    sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
-                    result = object_tracker.calculate_pipeline_data(sync_result[0], sync_result[1])
-                    object_tracker.post_results(result)
-                    print("The end result of the pipeline is: " + str(result))
-                else:
-                    pass
-
-            except Exception as e:
+                sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
+                result = object_tracker.calculate_pipeline_data(sync_result[0], sync_result[1])
+                object_tracker.post_results(result)
+                print("The end result of the pipeline is: " + str(result))
+            else:
                 pass
             time.sleep(1)
 

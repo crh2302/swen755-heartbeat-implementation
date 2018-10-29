@@ -5,9 +5,10 @@ from time import gmtime, strftime
 from multiprocessing import Process, Manager
 
 
-
 class FMCommunicationService:
-
+    """
+          This class is the communication channel between the object tracker object and the ThreatAssesmentModule
+    """
     def __init__(self):
         queue_maxsize = 1
         self.heartbeat_queue = multiprocessing.Queue(queue_maxsize)

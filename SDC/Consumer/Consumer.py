@@ -3,10 +3,14 @@ import time
 
 
 class Consumer:
+    """
+     This class is a generic consumer of the output of the active object tracker.
+     At this moment it only displays through console out what it gets from the object tracker
+    """
     def __init__(self):
         self.name = "consumer"
         self.communication_server = None
-        self.output_interval = 5
+        self.output_interval = 1
 
     def get_info(self):
         try:
@@ -32,6 +36,7 @@ class Consumer:
 
 
 if __name__ == '__main__':
+    print("Starting Consumer")
     consumer = Consumer()
     consumer.connect_to_channel()
     consumer.service_loop()

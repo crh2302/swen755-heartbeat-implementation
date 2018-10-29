@@ -3,6 +3,9 @@ import multiprocessing
 
 
 class CommunicationService:
+    """
+          This class is the communication channel between the domain entities
+    """
 
     def __init__(self):
         self.result_queue = multiprocessing.Queue()

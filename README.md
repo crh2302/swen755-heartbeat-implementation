@@ -24,4 +24,13 @@ First, start the Pyro name server by typing the following command in a separate 
 pyro4-ns
 ```
 
-After this, execute the ObjectTracker.py file in a terminal, followed by the ThreatAssessmentModule.py executable.
+After this, execute files in this order:
+
+- CommunicationServer.py
+- FMCommunicationServer.py
+- RedundantObjectTracker.py
+- ActiveObjectTracker.py
+- SensorController.py
+- Consumer.py
+- ThreatAssessmentModule.py
+

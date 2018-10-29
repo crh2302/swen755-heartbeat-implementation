@@ -42,10 +42,10 @@ class ThreatAssessmentModule:
         #self.queue = None   # the queue object used for inter-process communication. Defined in the activate_node method
         #self.activate_node(node)
         #self.current_node = node
-        self.pulse_tries_left = 3
+        self.pulse_tries_left = 15
 
-        self.checking_interval = 3
-        self.pulse_verification_interval = 1
+        self.checking_interval = 0.50
+        self.pulse_verification_interval = 0.25
 
         self.expire_time = 9
         self.last_updated_time = 0
@@ -146,6 +146,7 @@ class ThreatAssessmentModule:
         try:
             t1 = Thread(target=self.timed_message_receiver)
             t1.start()
+
         except (RuntimeError, ThreadError,) as e:
             print(e)
             print(e.args)
@@ -159,5 +160,6 @@ if __name__ == '__main__':
     # cs.activate_node()
 
     print(f"Communication service in ThreatAssessmentModule: {cs}")
+    time.sleep(5)
     heartbeat_receiver = ThreatAssessmentModule(cs)
     heartbeat_receiver.run()

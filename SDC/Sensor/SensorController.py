@@ -4,6 +4,11 @@ SENSOR_DATA_FILENAME = "sensor_data.txt"
 
 
 class SensorController:
+    """
+        This class is a generic sensor controller. The object tracker uses the information produced by this class
+        as input. At the moment, this class reads from a file, processes the data and sends it to the object tracker
+        through the communication channel.
+    """
     def __init__(self, _id, name):
         self.name = name
         self.id = _id
@@ -42,6 +47,6 @@ if __name__ == '__main__':
         sensor_input_data = sc.read_and_process()
         print(sensor_input_data)
         cs.set_value_sensor_queue(sensor_input_data)
-        sleep(1)
+        sleep(0.5)
 
 

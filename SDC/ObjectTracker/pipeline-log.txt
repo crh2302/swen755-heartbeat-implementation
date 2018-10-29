@@ -542,3 +542,552 @@ split_string;['6', '5', '3', '152', '97', '8']
 convert_to_int;[6, 5, 3, 152, 97, 8]
 get_sum_and_size;{'sum': 271, 'size': 6}
 get_average;45.166666666666664
+split_string;['1', '1', '1', '630', '2', '10']
+convert_to_int;[1, 1, 1, 630, 2, 10]
+get_sum_and_size;{'sum': 645, 'size': 6}
+get_average;107.5
+split_string;['2', '3', '1', '268', '595', '16']
+convert_to_int;[2, 3, 1, 268, 595, 16]
+get_sum_and_size;{'sum': 885, 'size': 6}
+get_average;147.5
+split_string;['3', '5', '2', '270', '506', '6']
+convert_to_int;[3, 5, 2, 270, 506, 6]
+get_sum_and_size;{'sum': 792, 'size': 6}
+get_average;132.0
+split_string;['4', '1', '3', '222', '577', '11']
+convert_to_int;[4, 1, 3, 222, 577, 11]
+get_sum_and_size;{'sum': 818, 'size': 6}
+get_average;136.33333333333334
+split_string;['5', '3', '1', '304', '320', '18']
+convert_to_int;[5, 3, 1, 304, 320, 18]
+get_sum_and_size;{'sum': 651, 'size': 6}
+get_average;108.5
+split_string;['6', '5', '3', '152', '97', '8']
+convert_to_int;[6, 5, 3, 152, 97, 8]
+get_sum_and_size;{'sum': 271, 'size': 6}
+get_average;45.166666666666664
+split_string;['7', '4', '3', '646', '399', '9']
+convert_to_int;[7, 4, 3, 646, 399, 9]
+get_sum_and_size;{'sum': 1068, 'size': 6}
+get_average;178.0
+split_string;['8', '3', '2', '716', '175', '11']
+convert_to_int;[8, 3, 2, 716, 175, 11]
+get_sum_and_size;{'sum': 915, 'size': 6}
+get_average;152.5
+split_string;['9', '2', '2', '137', '576', '5']
+convert_to_int;[9, 2, 2, 137, 576, 5]
+get_sum_and_size;{'sum': 731, 'size': 6}
+get_average;121.83333333333333
+split_string;['10', '5', '1', '481', '545', '12']
+convert_to_int;[10, 5, 1, 481, 545, 12]
+get_sum_and_size;{'sum': 1054, 'size': 6}
+get_average;175.66666666666666
+split_string;['11', '1', '3', '747', '148', '19']
+convert_to_int;[11, 1, 3, 747, 148, 19]
+get_sum_and_size;{'sum': 929, 'size': 6}
+get_average;154.83333333333334
+split_string;['12', '1', '2', '666', '259', '23']
+convert_to_int;[12, 1, 2, 666, 259, 23]
+get_sum_and_size;{'sum': 963, 'size': 6}
+get_average;160.5
+split_string;['13', '5', '2', '424', '205', '21']
+convert_to_int;[13, 5, 2, 424, 205, 21]
+get_sum_and_size;{'sum': 670, 'size': 6}
+get_average;111.66666666666667
+split_string;['14', '4', '1', '509', '1', '13']
+convert_to_int;[14, 4, 1, 509, 1, 13]
+get_sum_and_size;{'sum': 542, 'size': 6}
+get_average;90.33333333333333
+split_string;['15', '3', '2', '577', '123', '19']
+convert_to_int;[15, 3, 2, 577, 123, 19]
+get_sum_and_size;{'sum': 739, 'size': 6}
+get_average;123.16666666666667
+split_string;['16', '1', '2', '16', '539', '24']
+convert_to_int;[16, 1, 2, 16, 539, 24]
+get_sum_and_size;{'sum': 598, 'size': 6}
+get_average;99.66666666666667
+split_string;['17', '2', '3', '376', '439', '3']
+convert_to_int;[17, 2, 3, 376, 439, 3]
+get_sum_and_size;{'sum': 840, 'size': 6}
+get_average;140.0
+split_string;['18', '4', '1', '324', '433', '8']
+convert_to_int;[18, 4, 1, 324, 433, 8]
+get_sum_and_size;{'sum': 788, 'size': 6}
+get_average;131.33333333333334
+split_string;['21', '1', '2', '186', '332', '20']
+convert_to_int;[21, 1, 2, 186, 332, 20]
+get_sum_and_size;{'sum': 562, 'size': 6}
+get_average;93.66666666666667
+split_string;['22', '5', '2', '347', '261', '15']
+convert_to_int;[22, 5, 2, 347, 261, 15]
+get_sum_and_size;{'sum': 652, 'size': 6}
+get_average;108.66666666666667
+split_string;['23', '4', '2', '189', '208', '20']
+convert_to_int;[23, 4, 2, 189, 208, 20]
+get_sum_and_size;{'sum': 446, 'size': 6}
+get_average;74.33333333333333
+split_string;['25', '2', '1', '711', '411', '10']
+convert_to_int;[25, 2, 1, 711, 411, 10]
+get_sum_and_size;{'sum': 1160, 'size': 6}
+get_average;193.33333333333334
+split_string;['26', '5', '1', '345', '34', '14']
+convert_to_int;[26, 5, 1, 345, 34, 14]
+get_sum_and_size;{'sum': 425, 'size': 6}
+get_average;70.83333333333333
+split_string;['27', '1', '3', '269', '599', '23']
+convert_to_int;[27, 1, 3, 269, 599, 23]
+get_sum_and_size;{'sum': 922, 'size': 6}
+get_average;153.66666666666666
+split_string;['28', '4', '3', '393', '324', '23']
+convert_to_int;[28, 4, 3, 393, 324, 23]
+get_sum_and_size;{'sum': 775, 'size': 6}
+get_average;129.16666666666666
+split_string;['29', '3', '1', '513', '254', '12']
+convert_to_int;[29, 3, 1, 513, 254, 12]
+get_sum_and_size;{'sum': 812, 'size': 6}
+get_average;135.33333333333334
+split_string;['30', '4', '3', '723', '258', '19']
+convert_to_int;[30, 4, 3, 723, 258, 19]
+get_sum_and_size;{'sum': 1037, 'size': 6}
+get_average;172.83333333333334
+split_string;['31', '4', '1', '26', '566', '4']
+convert_to_int;[31, 4, 1, 26, 566, 4]
+get_sum_and_size;{'sum': 632, 'size': 6}
+get_average;105.33333333333333
+split_string;['32', '3', '2', '47', '505', '11']
+convert_to_int;[32, 3, 2, 47, 505, 11]
+get_sum_and_size;{'sum': 600, 'size': 6}
+get_average;100.0
+split_string;['33', '1', '1', '465', '225', '25']
+convert_to_int;[33, 1, 1, 465, 225, 25]
+get_sum_and_size;{'sum': 750, 'size': 6}
+get_average;125.0
+split_string;['34', '3', '3', '69', '269', '12']
+convert_to_int;[34, 3, 3, 69, 269, 12]
+get_sum_and_size;{'sum': 390, 'size': 6}
+get_average;65.0
+split_string;['35', '2', '3', '495', '275', '25']
+convert_to_int;[35, 2, 3, 495, 275, 25]
+get_sum_and_size;{'sum': 835, 'size': 6}
+get_average;139.16666666666666
+split_string;['36', '3', '3', '742', '520', '11']
+convert_to_int;[36, 3, 3, 742, 520, 11]
+get_sum_and_size;{'sum': 1315, 'size': 6}
+get_average;219.16666666666666
+split_string;['38', '3', '1', '562', '526', '17']
+convert_to_int;[38, 3, 1, 562, 526, 17]
+get_sum_and_size;{'sum': 1147, 'size': 6}
+get_average;191.16666666666666
+split_string;['39', '4', '3', '648', '336', '14']
+convert_to_int;[39, 4, 3, 648, 336, 14]
+get_sum_and_size;{'sum': 1044, 'size': 6}
+get_average;174.0
+split_string;['40', '1', '2', '110', '93', '5']
+convert_to_int;[40, 1, 2, 110, 93, 5]
+get_sum_and_size;{'sum': 251, 'size': 6}
+get_average;41.833333333333336
+split_string;['41', '2', '3', '194', '96', '7']
+convert_to_int;[41, 2, 3, 194, 96, 7]
+get_sum_and_size;{'sum': 343, 'size': 6}
+get_average;57.166666666666664
+split_string;['42', '4', '3', '130', '105', '16']
+convert_to_int;[42, 4, 3, 130, 105, 16]
+get_sum_and_size;{'sum': 300, 'size': 6}
+get_average;50.0
+split_string;['44', '3', '3', '473', '177', '15']
+convert_to_int;[44, 3, 3, 473, 177, 15]
+get_sum_and_size;{'sum': 715, 'size': 6}
+get_average;119.16666666666667
+split_string;['45', '5', '2', '503', '509', '2']
+split_string;['1', '1', '1', '630', '2', '10']
+convert_to_int;[1, 1, 1, 630, 2, 10]
+get_sum_and_size;{'sum': 645, 'size': 6}
+get_average;107.5
+split_string;['2', '3', '1', '268', '595', '16']
+convert_to_int;[2, 3, 1, 268, 595, 16]
+get_sum_and_size;{'sum': 885, 'size': 6}
+get_average;147.5
+split_string;['3', '5', '2', '270', '506', '6']
+convert_to_int;[3, 5, 2, 270, 506, 6]
+get_sum_and_size;{'sum': 792, 'size': 6}
+get_average;132.0
+split_string;['4', '1', '3', '222', '577', '11']
+convert_to_int;[4, 1, 3, 222, 577, 11]
+get_sum_and_size;{'sum': 818, 'size': 6}
+get_average;136.33333333333334
+split_string;['5', '3', '1', '304', '320', '18']
+convert_to_int;[5, 3, 1, 304, 320, 18]
+get_sum_and_size;{'sum': 651, 'size': 6}
+get_average;108.5
+split_string;['6', '5', '3', '152', '97', '8']
+convert_to_int;[6, 5, 3, 152, 97, 8]
+get_sum_and_size;{'sum': 271, 'size': 6}
+get_average;45.166666666666664
+split_string;['7', '4', '3', '646', '399', '9']
+convert_to_int;[7, 4, 3, 646, 399, 9]
+get_sum_and_size;{'sum': 1068, 'size': 6}
+get_average;178.0
+split_string;['8', '3', '2', '716', '175', '11']
+convert_to_int;[8, 3, 2, 716, 175, 11]
+get_sum_and_size;{'sum': 915, 'size': 6}
+get_average;152.5
+split_string;['10', '5', '1', '481', '545', '12']
+convert_to_int;[10, 5, 1, 481, 545, 12]
+get_sum_and_size;{'sum': 1054, 'size': 6}
+get_average;175.66666666666666
+split_string;['11', '1', '3', '747', '148', '19']
+convert_to_int;[11, 1, 3, 747, 148, 19]
+get_sum_and_size;{'sum': 929, 'size': 6}
+get_average;154.83333333333334
+split_string;['12', '1', '2', '666', '259', '23']
+convert_to_int;[12, 1, 2, 666, 259, 23]
+get_sum_and_size;{'sum': 963, 'size': 6}
+get_average;160.5
+split_string;['13', '5', '2', '424', '205', '21']
+convert_to_int;[13, 5, 2, 424, 205, 21]
+get_sum_and_size;{'sum': 670, 'size': 6}
+get_average;111.66666666666667
+split_string;['15', '3', '2', '577', '123', '19']
+convert_to_int;[15, 3, 2, 577, 123, 19]
+get_sum_and_size;{'sum': 739, 'size': 6}
+get_average;123.16666666666667
+split_string;['16', '1', '2', '16', '539', '24']
+convert_to_int;[16, 1, 2, 16, 539, 24]
+get_sum_and_size;{'sum': 598, 'size': 6}
+get_average;99.66666666666667
+split_string;['17', '2', '3', '376', '439', '3']
+convert_to_int;[17, 2, 3, 376, 439, 3]
+get_sum_and_size;{'sum': 840, 'size': 6}
+get_average;140.0
+split_string;['19', '5', '1', '185', '202', '9']
+convert_to_int;[19, 5, 1, 185, 202, 9]
+get_sum_and_size;{'sum': 421, 'size': 6}
+get_average;70.16666666666667
+split_string;['20', '2', '2', '609', '159', '7']
+convert_to_int;[20, 2, 2, 609, 159, 7]
+get_sum_and_size;{'sum': 799, 'size': 6}
+get_average;133.16666666666666
+split_string;['21', '1', '2', '186', '332', '20']
+convert_to_int;[21, 1, 2, 186, 332, 20]
+get_sum_and_size;{'sum': 562, 'size': 6}
+get_average;93.66666666666667
+split_string;['22', '5', '2', '347', '261', '15']
+convert_to_int;[22, 5, 2, 347, 261, 15]
+get_sum_and_size;{'sum': 652, 'size': 6}
+get_average;108.66666666666667
+split_string;['23', '4', '2', '189', '208', '20']
+convert_to_int;[23, 4, 2, 189, 208, 20]
+get_sum_and_size;{'sum': 446, 'size': 6}
+get_average;74.33333333333333
+split_string;['24', '3', '2', '590', '498', '22']
+convert_to_int;[24, 3, 2, 590, 498, 22]
+get_sum_and_size;{'sum': 1139, 'size': 6}
+get_average;189.83333333333334
+split_string;['25', '2', '1', '711', '411', '10']
+convert_to_int;[25, 2, 1, 711, 411, 10]
+get_sum_and_size;{'sum': 1160, 'size': 6}
+get_average;193.33333333333334
+split_string;['26', '5', '1', '345', '34', '14']
+convert_to_int;[26, 5, 1, 345, 34, 14]
+get_sum_and_size;{'sum': 425, 'size': 6}
+get_average;70.83333333333333
+split_string;['27', '1', '3', '269', '599', '23']
+convert_to_int;[27, 1, 3, 269, 599, 23]
+get_sum_and_size;{'sum': 922, 'size': 6}
+get_average;153.66666666666666
+split_string;['28', '4', '3', '393', '324', '23']
+convert_to_int;[28, 4, 3, 393, 324, 23]
+get_sum_and_size;{'sum': 775, 'size': 6}
+get_average;129.16666666666666
+split_string;['29', '3', '1', '513', '254', '12']
+convert_to_int;[29, 3, 1, 513, 254, 12]
+get_sum_and_size;{'sum': 812, 'size': 6}
+get_average;135.33333333333334
+split_string;['30', '4', '3', '723', '258', '19']
+convert_to_int;[30, 4, 3, 723, 258, 19]
+get_sum_and_size;{'sum': 1037, 'size': 6}
+get_average;172.83333333333334
+split_string;['31', '4', '1', '26', '566', '4']
+convert_to_int;[31, 4, 1, 26, 566, 4]
+get_sum_and_size;{'sum': 632, 'size': 6}
+get_average;105.33333333333333
+split_string;['32', '3', '2', '47', '505', '11']
+convert_to_int;[32, 3, 2, 47, 505, 11]
+get_sum_and_size;{'sum': 600, 'size': 6}
+get_average;100.0
+split_string;['34', '3', '3', '69', '269', '12']
+convert_to_int;[34, 3, 3, 69, 269, 12]
+get_sum_and_size;{'sum': 390, 'size': 6}
+get_average;65.0
+split_string;['35', '2', '3', '495', '275', '25']
+convert_to_int;[35, 2, 3, 495, 275, 25]
+get_sum_and_size;{'sum': 835, 'size': 6}
+get_average;139.16666666666666
+split_string;['36', '3', '3', '742', '520', '11']
+convert_to_int;[36, 3, 3, 742, 520, 11]
+get_sum_and_size;{'sum': 1315, 'size': 6}
+get_average;219.16666666666666
+split_string;['37', '1', '2', '734', '64', '16']
+convert_to_int;[37, 1, 2, 734, 64, 16]
+get_sum_and_size;{'sum': 854, 'size': 6}
+get_average;142.33333333333334
+split_string;['38', '3', '1', '562', '526', '17']
+convert_to_int;[38, 3, 1, 562, 526, 17]
+get_sum_and_size;{'sum': 1147, 'size': 6}
+get_average;191.16666666666666
+split_string;['39', '4', '3', '648', '336', '14']
+convert_to_int;[39, 4, 3, 648, 336, 14]
+get_sum_and_size;{'sum': 1044, 'size': 6}
+get_average;174.0
+split_string;['40', '1', '2', '110', '93', '5']
+convert_to_int;[40, 1, 2, 110, 93, 5]
+get_sum_and_size;{'sum': 251, 'size': 6}
+get_average;41.833333333333336
+split_string;['43', '3', '2', '93', '178', '18']
+convert_to_int;[43, 3, 2, 93, 178, 18]
+get_sum_and_size;{'sum': 337, 'size': 6}
+get_average;56.166666666666664
+split_string;['45', '5', '2', '503', '509', '2']
+convert_to_int;[45, 5, 2, 503, 509, 2]
+get_sum_and_size;{'sum': 1066, 'size': 6}
+get_average;177.66666666666666
+split_string;['46', '5', '3', '142', '451', '23']
+convert_to_int;[46, 5, 3, 142, 451, 23]
+get_sum_and_size;{'sum': 670, 'size': 6}
+split_string;['47', '2', '1', '514', '454', '16']
+get_average;111.66666666666667
+convert_to_int;[47, 2, 1, 514, 454, 16]
+get_sum_and_size;{'sum': 1034, 'size': 6}
+get_average;172.33333333333334
+split_string;['49', '3', '1', '605', '8', '13']
+convert_to_int;[49, 3, 1, 605, 8, 13]
+get_sum_and_size;{'sum': 679, 'size': 6}
+split_string;['50', '3', '2', '730', '434', '20']
+get_average;113.16666666666667
+convert_to_int;[50, 3, 2, 730, 434, 20]
+get_sum_and_size;{'sum': 1239, 'size': 6}
+get_average;206.5
+split_string;['51', '3', '2', '758', '569', '10']
+convert_to_int;[51, 3, 2, 758, 569, 10]
+get_sum_and_size;{'sum': 1393, 'size': 6}
+get_average;232.16666666666666
+split_string;['53', '4', '2', '491', '144', '6']
+convert_to_int;[53, 4, 2, 491, 144, 6]
+get_sum_and_size;{'sum': 700, 'size': 6}
+get_average;116.66666666666667
+split_string;['54', '2', '3', '421', '458', '23']
+convert_to_int;[54, 2, 3, 421, 458, 23]
+get_sum_and_size;{'sum': 961, 'size': 6}
+get_average;160.16666666666666
+split_string;['55', '1', '3', '570', '25', '10']
+convert_to_int;[55, 1, 3, 570, 25, 10]
+get_sum_and_size;{'sum': 664, 'size': 6}
+get_average;110.66666666666667
+split_string;['56', '2', '2', '497', '226', '7']
+convert_to_int;[56, 2, 2, 497, 226, 7]
+get_sum_and_size;{'sum': 790, 'size': 6}
+get_average;131.66666666666666
+split_string;['58', '1', '2', '11', '140', '17']
+convert_to_int;[58, 1, 2, 11, 140, 17]
+get_sum_and_size;{'sum': 229, 'size': 6}
+get_average;38.166666666666664
+split_string;['59', '3', '2', '745', '58', '1']
+convert_to_int;[59, 3, 2, 745, 58, 1]
+get_sum_and_size;{'sum': 868, 'size': 6}
+get_average;144.66666666666666
+split_string;['60', '2', '1', '478', '438', '21']
+convert_to_int;[60, 2, 1, 478, 438, 21]
+get_sum_and_size;{'sum': 1000, 'size': 6}
+get_average;166.66666666666666
+split_string;['61', '3', '1', '564', '378', '23']
+convert_to_int;[61, 3, 1, 564, 378, 23]
+get_sum_and_size;{'sum': 1030, 'size': 6}
+get_average;171.66666666666666
+split_string;['62', '1', '1', '271', '135', '3']
+convert_to_int;[62, 1, 1, 271, 135, 3]
+get_sum_and_size;{'sum': 473, 'size': 6}
+get_average;78.83333333333333
+split_string;['63', '1', '1', '739', '516', '18']
+convert_to_int;[63, 1, 1, 739, 516, 18]
+get_sum_and_size;{'sum': 1338, 'size': 6}
+get_average;223.0
+split_string;['64', '5', '2', '321', '481', '3']
+convert_to_int;[64, 5, 2, 321, 481, 3]
+get_sum_and_size;{'sum': 876, 'size': 6}
+get_average;146.0
+split_string;['65', '5', '3', '188', '66', '22']
+convert_to_int;[65, 5, 3, 188, 66, 22]
+get_sum_and_size;{'sum': 349, 'size': 6}
+get_average;58.166666666666664
+split_string;['66', '4', '1', '546', '407', '17']
+convert_to_int;[66, 4, 1, 546, 407, 17]
+get_sum_and_size;{'sum': 1041, 'size': 6}
+get_average;173.5
+split_string;['67', '5', '3', '47', '322', '1']
+convert_to_int;[67, 5, 3, 47, 322, 1]
+get_sum_and_size;{'sum': 445, 'size': 6}
+get_average;74.16666666666667
+split_string;['68', '1', '1', '439', '568', '9']
+convert_to_int;[68, 1, 1, 439, 568, 9]
+get_sum_and_size;{'sum': 1086, 'size': 6}
+get_average;181.0
+split_string;['69', '2', '2', '113', '85', '2']
+convert_to_int;[69, 2, 2, 113, 85, 2]
+get_sum_and_size;{'sum': 273, 'size': 6}
+get_average;45.5
+split_string;['70', '3', '2', '210', '555', '25']
+convert_to_int;[70, 3, 2, 210, 555, 25]
+get_sum_and_size;{'sum': 865, 'size': 6}
+get_average;144.16666666666666
+split_string;['71', '5', '1', '118', '283', '24']
+convert_to_int;[71, 5, 1, 118, 283, 24]
+get_sum_and_size;{'sum': 502, 'size': 6}
+get_average;83.66666666666667
+split_string;['72', '1', '1', '793', '493', '17']
+convert_to_int;[72, 1, 1, 793, 493, 17]
+get_sum_and_size;{'sum': 1377, 'size': 6}
+get_average;229.5
+split_string;['73', '1', '1', '136', '506', '13']
+convert_to_int;[73, 1, 1, 136, 506, 13]
+get_sum_and_size;{'sum': 730, 'size': 6}
+get_average;121.66666666666667
+split_string;['74', '3', '3', '52', '335', '24']
+convert_to_int;[74, 3, 3, 52, 335, 24]
+get_sum_and_size;{'sum': 491, 'size': 6}
+get_average;81.83333333333333
+split_string;['75', '3', '1', '329', '393', '21']
+convert_to_int;[75, 3, 1, 329, 393, 21]
+get_sum_and_size;{'sum': 822, 'size': 6}
+get_average;137.0
+split_string;['76', '3', '2', '522', '243', '15']
+convert_to_int;[76, 3, 2, 522, 243, 15]
+get_sum_and_size;{'sum': 861, 'size': 6}
+get_average;143.5
+split_string;['77', '1', '1', '615', '494', '20']
+convert_to_int;[77, 1, 1, 615, 494, 20]
+get_sum_and_size;{'sum': 1208, 'size': 6}
+get_average;201.33333333333334
+split_string;['78', '5', '1', '610', '49', '5']
+convert_to_int;[78, 5, 1, 610, 49, 5]
+get_sum_and_size;{'sum': 748, 'size': 6}
+get_average;124.66666666666667
+split_string;['79', '4', '3', '748', '76', '24']
+convert_to_int;[79, 4, 3, 748, 76, 24]
+get_sum_and_size;{'sum': 934, 'size': 6}
+get_average;155.66666666666666
+split_string;['80', '2', '1', '93', '378', '11']
+convert_to_int;[80, 2, 1, 93, 378, 11]
+get_sum_and_size;{'sum': 565, 'size': 6}
+get_average;94.16666666666667
+split_string;['81', '4', '1', '102', '237', '7']
+convert_to_int;[81, 4, 1, 102, 237, 7]
+get_sum_and_size;{'sum': 432, 'size': 6}
+get_average;72.0
+split_string;['82', '2', '1', '642', '563', '11']
+convert_to_int;[82, 2, 1, 642, 563, 11]
+get_sum_and_size;{'sum': 1301, 'size': 6}
+get_average;216.83333333333334
+split_string;['83', '1', '3', '293', '546', '24']
+convert_to_int;[83, 1, 3, 293, 546, 24]
+get_sum_and_size;{'sum': 950, 'size': 6}
+get_average;158.33333333333334
+split_string;['85', '3', '1', '744', '7', '9']
+convert_to_int;[85, 3, 1, 744, 7, 9]
+get_sum_and_size;{'sum': 849, 'size': 6}
+get_average;141.5
+split_string;['86', '5', '1', '252', '237', '4']
+convert_to_int;[86, 5, 1, 252, 237, 4]
+get_sum_and_size;{'sum': 585, 'size': 6}
+get_average;97.5
+split_string;['87', '1', '3', '725', '453', '1']
+convert_to_int;[87, 1, 3, 725, 453, 1]
+get_sum_and_size;{'sum': 1270, 'size': 6}
+get_average;211.66666666666666
+split_string;['88', '2', '2', '567', '483', '6']
+convert_to_int;[88, 2, 2, 567, 483, 6]
+get_sum_and_size;{'sum': 1148, 'size': 6}
+get_average;191.33333333333334
+split_string;['1', '1', '1', '630', '2', '10']
+convert_to_int;[1, 1, 1, 630, 2, 10]
+get_sum_and_size;{'sum': 645, 'size': 6}
+get_average;107.5
+split_string;['2', '3', '1', '268', '595', '16']
+convert_to_int;[2, 3, 1, 268, 595, 16]
+get_sum_and_size;{'sum': 885, 'size': 6}
+get_average;147.5
+split_string;['3', '5', '2', '270', '506', '6']
+convert_to_int;[3, 5, 2, 270, 506, 6]
+get_sum_and_size;{'sum': 792, 'size': 6}
+get_average;132.0
+split_string;['4', '1', '3', '222', '577', '11']
+convert_to_int;[4, 1, 3, 222, 577, 11]
+get_sum_and_size;{'sum': 818, 'size': 6}
+get_average;136.33333333333334
+split_string;['7', '4', '3', '646', '399', '9']
+convert_to_int;[7, 4, 3, 646, 399, 9]
+get_sum_and_size;{'sum': 1068, 'size': 6}
+get_average;178.0
+split_string;['8', '3', '2', '716', '175', '11']
+convert_to_int;[8, 3, 2, 716, 175, 11]
+get_sum_and_size;{'sum': 915, 'size': 6}
+get_average;152.5
+split_string;['9', '2', '2', '137', '576', '5']
+convert_to_int;[9, 2, 2, 137, 576, 5]
+get_sum_and_size;{'sum': 731, 'size': 6}
+get_average;121.83333333333333
+split_string;['10', '5', '1', '481', '545', '12']
+convert_to_int;[10, 5, 1, 481, 545, 12]
+get_sum_and_size;{'sum': 1054, 'size': 6}
+get_average;175.66666666666666
+split_string;['11', '1', '3', '747', '148', '19']
+convert_to_int;[11, 1, 3, 747, 148, 19]
+get_sum_and_size;{'sum': 929, 'size': 6}
+get_average;154.83333333333334
+split_string;['12', '1', '2', '666', '259', '23']
+convert_to_int;[12, 1, 2, 666, 259, 23]
+get_sum_and_size;{'sum': 963, 'size': 6}
+get_average;160.5
+split_string;['13', '5', '2', '424', '205', '21']
+convert_to_int;[13, 5, 2, 424, 205, 21]
+get_sum_and_size;{'sum': 670, 'size': 6}
+get_average;111.66666666666667
+split_string;['14', '4', '1', '509', '1', '13']
+convert_to_int;[14, 4, 1, 509, 1, 13]
+get_sum_and_size;{'sum': 542, 'size': 6}
+get_average;90.33333333333333
+split_string;['15', '3', '2', '577', '123', '19']
+convert_to_int;[15, 3, 2, 577, 123, 19]
+get_sum_and_size;{'sum': 739, 'size': 6}
+get_average;123.16666666666667
+split_string;['16', '1', '2', '16', '539', '24']
+convert_to_int;[16, 1, 2, 16, 539, 24]
+get_sum_and_size;{'sum': 598, 'size': 6}
+get_average;99.66666666666667
+split_string;['17', '2', '3', '376', '439', '3']
+convert_to_int;[17, 2, 3, 376, 439, 3]
+get_sum_and_size;{'sum': 840, 'size': 6}
+get_average;140.0
+split_string;['18', '4', '1', '324', '433', '8']
+convert_to_int;[18, 4, 1, 324, 433, 8]
+get_sum_and_size;{'sum': 788, 'size': 6}
+get_average;131.33333333333334
+split_string;['19', '5', '1', '185', '202', '9']
+convert_to_int;[19, 5, 1, 185, 202, 9]
+get_sum_and_size;{'sum': 421, 'size': 6}
+get_average;70.16666666666667
+split_string;['20', '2', '2', '609', '159', '7']
+convert_to_int;[20, 2, 2, 609, 159, 7]
+get_sum_and_size;{'sum': 799, 'size': 6}
+get_average;133.16666666666666
+split_string;['21', '1', '2', '186', '332', '20']
+convert_to_int;[21, 1, 2, 186, 332, 20]
+get_sum_and_size;{'sum': 562, 'size': 6}
+get_average;93.66666666666667
+split_string;['22', '5', '2', '347', '261', '15']
+convert_to_int;[22, 5, 2, 347, 261, 15]
+get_sum_and_size;{'sum': 652, 'size': 6}
+get_average;108.66666666666667
+split_string;['23', '4', '2', '189', '208', '20']
+convert_to_int;[23, 4, 2, 189, 208, 20]
+get_sum_and_size;{'sum': 446, 'size': 6}
+get_average;74.33333333333333
