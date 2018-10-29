@@ -274,7 +274,7 @@ def run(_id, is_active, allow_fault):
     t.daemon = True
     t.start()
 
-    if is_active:
+    if object_tracker.is_active:
         object_tracker.is_up_to_date = True
 
     # Synchronization code:
@@ -283,7 +283,7 @@ def run(_id, is_active, allow_fault):
 
             try:
                 # Get the input data4
-                if is_active:
+                if object_tracker.is_active:
                     data = object_tracker.data_manager_cs.get_value_sensor_queue()
 
                     sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
