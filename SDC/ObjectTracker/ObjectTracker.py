@@ -280,20 +280,24 @@ def run(_id, is_active, allow_fault):
     # Synchronization code:
     while True:
         # This should run only when the tracker is marked as Active
-        if is_active:
-            try:
-                # Get the input data
-                data = object_tracker.data_manager_cs.get_value_sensor_queue()
 
-                sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
-                result = object_tracker.calculate_pipeline_data(sync_result[0], sync_result[1])
-                object_tracker.post_results(result)
-                print("The end result of the pipeline is: " + str(result))
+            try:
+                # Get the input data4
+                if is_active:
+                    data = object_tracker.data_manager_cs.get_value_sensor_queue()
+
+                    sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
+                    result = object_tracker.calculate_pipeline_data(sync_result[0], sync_result[1])
+                    object_tracker.post_results(result)
+                    print("The end result of the pipeline is: " + str(result))
+                else:
+                    print("Not sync")
 
             except Exception as e:
-                # print(e)
                 pass
+            time.sleep(1)
+
 
 
 if __name__ == '__main__':
-    ObjectTracker.run(1, True, True)
+    run(1, True, True)
