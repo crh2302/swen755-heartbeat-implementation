@@ -1,6 +1,6 @@
 from time import sleep
 from Pyro4 import Proxy
-SENSOR_DATA_FILENAME = "SDC/Sensor/sensor_data.txt"
+SENSOR_DATA_FILENAME = "sensor_data.txt"
 
 
 class SensorController:
