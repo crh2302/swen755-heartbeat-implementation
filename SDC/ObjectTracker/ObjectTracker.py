@@ -21,7 +21,7 @@ class ObjectTracker:
         queue (object): The queue object used to communicate with the ThreatAssessmentModule process.
     """
 
-    def __init__(self, cs, _id, is_active, allow_fault):
+    def __init__(self, cs, _id, is_active, allow_fault, data_manager_cs):
         """
         The constructor for the ObjectTracker class.
 
@@ -30,11 +30,12 @@ class ObjectTracker:
         """
         self.sending_interval = 1
         self.fault_manager_cs = cs
+        self.data_manager_cs = data_manager_cs
         self.allow_fault = allow_fault
         self.time_between_steps = 5
-        self.isActive = is_active
+        self.is_active = is_active
         self.id = _id
-
+        self.is_up_to_date = False
 
         # Array containing the method steps to the Pipe-And-Filter pattern
         self.pipeline_steps = [
@@ -61,7 +62,7 @@ class ObjectTracker:
         """
         while multiprocessing.current_process().is_alive():
                 try:
-                    if self.isActive:
+                    if self.is_active:
                         message = str(self.id) + "|"+ "heartbeat_pulse"
                         self.fault_manager_cs.put_heartbeat_message(message)
                         print(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ":Sending heartbeat message: I'm alive")
@@ -121,11 +122,11 @@ class ObjectTracker:
         # Do something here
 
         #self.calculate_proximity()
-        if self.isActive:
-            cs = Pyro4.Proxy("PYRONAME:CommunicationService")
-            print(f"Communication service in object tracker {cs}")
+        if self.is_active:
+            self.data_manager_cs = Pyro4.Proxy("PYRONAME:CommunicationService")
+            print(f"Communication service in object tracker {self.data_manager_cs}")
             try:
-                cs.set_value_result_queue(data)
+                self.data_manager_cs.set_value_result_queue(data)
             except:
                 pass
 
@@ -153,17 +154,16 @@ class ObjectTracker:
         # First step: split a String of the form "1,2,3,4,5" on an array, using commas as the delimiter
         # Input: "1,2,3,4,5" => Output: ["1","2","3","4","5"]
         result = item.split(',')
-        if self.isActive:
+        if self.is_active:
             with open(LOG_PIPELINE_FILENAME, "a") as file:
                 file.write("split_string;" + repr(result) + "\n")
         return result
-
 
     def convert_to_int(self, item):
         # Second step: converts the Strings of the previous array into integers
         # Input: ["1","2","3","4","5"] => Output: [1,2,3,4,5]
         result = [int(i) for i in item]
-        if self.isActive:
+        if self.is_active:
             with open(LOG_PIPELINE_FILENAME, "a") as file:
                 file.write("convert_to_int;" + repr(result) + "\n")
         return result
@@ -173,7 +173,7 @@ class ObjectTracker:
         # Third step: takes the array of integers, and returns a 'sum' and a 'size' value in a dictionary
         # Input: [1,2,3,4,5] => Output: { 'sum': 15, 'size': 5 }
         result = {'sum': sum(items), 'size': len(items)}
-        if self.isActive:
+        if self.is_active:
             with open(LOG_PIPELINE_FILENAME, "a") as file:
                 file.write("get_sum_and_size;" + repr(result) + "\n")
         return result
@@ -182,7 +182,7 @@ class ObjectTracker:
         # Fourth step: use the sum and size values to calculate the average (sum / size)
         # Input: { 'sum': 15, 'size': 5 } => Output: 3
         result = item['sum'] / item['size']
-        if self.isActive:
+        if self.is_active:
             with open(LOG_PIPELINE_FILENAME, "a") as file:
                 file.write("get_average;" + repr(result) + "\n")
         return result
@@ -200,12 +200,21 @@ class ObjectTracker:
             time.sleep(self.time_between_steps)
         return gen
 
-    def synchronize_data(self):
-        if self.isActive:
-            pass
+    def synchronize_data(self, file_lines, data):
+        # Synchronize with the pipeline-log.txt to check the last executed method
+        last_line = file_lines[-1] if len(file_lines) > 0 else ""
+        function_name = last_line.split(';')[0] if len(file_lines) > 0 else ""
+        # eval is used to convert from string to object
+        function_result = eval(last_line.split(';')[1]) if len(file_lines) > 0 else data
+
+        # The 'data' parameter here should be either the input (for the active tracker)
+        # or the function_result (for the redundant tracker)
+        # The 'last_step' parameter should have the function_name on the redundant tracker
+        if self.is_up_to_date:
+            return data, ""
         else:
-            pass
-        pass
+            self.is_up_to_date = True
+            return function_result, function_name
 
     def get_id(self):
         return self.id
@@ -213,12 +222,12 @@ class ObjectTracker:
     @Pyro4.expose
     def activate(self):
         print("activate")
-        if self.isActive:
-            self.isActive = False
+        if self.is_active:
+            self.is_active = False
         else:
-            self.isActive = True
+            self.is_active = True
 
-    def update(self,event):
+    def update(self, event):
         if "active_node_selection" == event:
             pass
 
@@ -235,7 +244,8 @@ def run(_id, is_active, allow_fault):
         None.
     """
     cs = Pyro4.Proxy("PYRONAME:FMCommunicationService")
-    object_tracker = ObjectTracker(cs, _id, is_active, allow_fault)
+    data_manager_cs = Pyro4.Proxy("PYRONAME:CommunicationService")
+    object_tracker = ObjectTracker(cs, _id, is_active, allow_fault, data_manager_cs)
 
     try:
         daemon = Pyro4.Daemon()
@@ -264,54 +274,25 @@ def run(_id, is_active, allow_fault):
     t.daemon = True
     t.start()
 
-    #t.join()
-
-    #object_tracker.detect_nearby_object()
+    if is_active:
+        object_tracker.is_up_to_date = True
 
     # Synchronization code:
-    # TODO: This should run on the RedundantObjectTracker, and only when the Active process is down
     while True:
-        # Get the input data
-        # TODO: This is hardcoded for now, but the data should come from a Pyro4 queue
-        data = "1,2,3,4,5"
+        # This should run only when the tracker is marked as Active
+        if is_active:
+            try:
+                # Get the input data
+                data = object_tracker.data_manager_cs.get_value_sensor_queue()
 
-        # TODO: Synchronize with the pipeline-log.txt to check the last executed method
-        last_line = open(LOG_PIPELINE_FILENAME, "r").readlines()[-1]
-        function_name = last_line.split(';')[0]
-        function_result = eval(last_line.split(';')[1])  # eval is used to convert from string to object
+                sync_result = object_tracker.synchronize_data(open(LOG_PIPELINE_FILENAME, "r").readlines(), data)
+                result = object_tracker.calculate_pipeline_data(sync_result[0], sync_result[1])
+                object_tracker.post_results(result)
+                print("The end result of the pipeline is: " + str(result))
 
-        # TODO:
-        # The 'data' parameter here should be either the input (for the active tracker)
-        # or the function_result (for the redundant tracker)
-        # The 'last_step' parameter should have the function_name on the redundant tracker
-        result = object_tracker.calculate_pipeline_data(data, "")
-        object_tracker.post_results(result)
-
-        print("The end result of the pipeline is: " + str(result))
-
-
-
-    # @staticmethod
-    # def start_object_tracker():
-    #     multiprocessing.log_to_stderr(logging.INFO)
-    #     Pyro4.config.REQUIRE_EXPOSE = False
-    #
-    #     daemon = Pyro4.Daemon()  # make a Pyro4 daemon
-    #     ns = Pyro4.locateNS()  # find the name server
-    #
-    #     # Create the Queue object and register it on the Pyro4 proxy
-    #     queue_hb = multiprocessing.Queue()
-    #     queue_uri = daemon.register(queue_hb)
-    #     ns.register("heartbeat.queue", queue_uri)
-    #
-    #     sender_process=multiprocessing.Process(name='Active Process', target=ObjectTracker.run, args=(queue_hb,))
-    #     sender_process.start()
-    #
-    #     daemon.requestLoop()
-    # def post_result(self):
-    #     pass
-
-
+            except Exception as e:
+                # print(e)
+                pass
 
 
 if __name__ == '__main__':

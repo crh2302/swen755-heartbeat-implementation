@@ -13,8 +13,8 @@ class CommunicationService:
         return self.result_queue.get(block=False)
 
     @Pyro4.expose
-    def set_value_result_queue(self,ele):
-        return self.result_queue.put(ele)
+    def set_value_result_queue(self, ele):
+        return self.result_queue.put(ele, block=False)
 
     @Pyro4.expose
     def get_value_sensor_queue(self):
@@ -22,7 +22,7 @@ class CommunicationService:
 
     @Pyro4.expose
     def set_value_sensor_queue(self, ele):
-        return self.sensor_queue.put(ele)
+        return self.sensor_queue.put(ele, block=False)
 
 
 def init():
@@ -44,6 +44,7 @@ def init():
         init()
     except Exception as e:
         print(f"Exception at main(). More info:{e}")
+
 
 if __name__ == '__main__':
     print("Starting CommunicationServer")

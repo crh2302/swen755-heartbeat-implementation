@@ -28,7 +28,7 @@ class SensorController:
         return line
 
     def read_and_process(self):
-        return self.read_data().rstrip("\n\r").replace(",", "|")
+        return self.read_data().rstrip("\n\r")
 
 
 if __name__ == '__main__':
@@ -43,3 +43,5 @@ if __name__ == '__main__':
         print(sensor_input_data)
         cs.set_value_sensor_queue(sensor_input_data)
         sleep(1)
+
+
